@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-keys'
+import Image from 'next/image'
 import type { ScaleDto } from '@/application/dtos'
 
 export default function HomePage() {
@@ -85,7 +86,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col items-center gap-8">
       <div className="text-center">
-        <img src="/one-ring.svg" alt="" className="mx-auto mb-4 h-16 w-16 animate-ring-glow" />
+        <Image src="/one-ring.svg" alt="" className="mx-auto mb-4 h-16 w-16 animate-ring-glow" />
         <h1 className="font-heading text-4xl tracking-wide text-gold">Lord of Scrum</h1>
         <p className="mt-3 max-w-sm text-sm text-muted-foreground italic">
           One tool to estimate them all, one tool to find consensus,<br />
@@ -94,7 +95,7 @@ export default function HomePage() {
       </div>
 
       <div className="elvish-divider w-full max-w-md">
-        <img src="/fellowship-shield.svg" alt="" className="h-5 w-5 opacity-40" />
+        <Image src="/fellowship-shield.svg" alt="" className="h-5 w-5 opacity-40" />
       </div>
 
       <div className="lotr-card-ornate w-full max-w-md">

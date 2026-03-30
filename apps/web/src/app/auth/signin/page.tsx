@@ -1,11 +1,12 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import Image from 'next/image'
 
 export default function SignInPage() {
   return (
     <div className="flex flex-col items-center gap-6 py-16">
-      <img src="/one-ring.svg" alt="" className="h-14 w-14 animate-ring-glow" />
+      <Image src="/one-ring.svg" alt="" className="h-14 w-14 animate-ring-glow" />
       <h1 className="font-heading text-2xl tracking-wide text-gold">Speak, Friend, and Enter</h1>
       <p className="text-sm text-muted-foreground italic">Present yourself to save your councils and track history.</p>
       <div className="flex flex-col gap-3 w-full max-w-xs">

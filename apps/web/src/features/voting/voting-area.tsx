@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import type { SessionDto, RoundDto } from '@/application/dtos'
+import Image from 'next/image'
+import type { SessionDto } from '@/application/dtos'
 
 interface Props {
   session: SessionDto
@@ -17,7 +18,7 @@ export function VotingArea({ session, participantId, onVote }: Props) {
   if (!currentRound) {
     return (
       <div className="lotr-card p-8 text-center">
-        <img src="/tree-of-gondor.svg" alt="" className="mx-auto mb-4 h-16 w-16 text-muted-foreground/30" />
+        <Image src="/tree-of-gondor.svg" alt="" className="mx-auto mb-4 h-16 w-16 text-muted-foreground/30" />
         <p className="font-subheading text-lg text-muted-foreground">The council has not yet begun...</p>
         <p className="mt-2 text-sm text-muted-foreground italic">Await the word of the Steward.</p>
       </div>
@@ -55,7 +56,7 @@ export function VotingArea({ session, participantId, onVote }: Props) {
           <div className="flex flex-col items-center gap-5">
             {/* The One Ring with unanimous value */}
             <div className="consensus-ring">
-              <img src="/one-ring.svg" alt="" className="absolute inset-0 h-full w-full animate-ring-glow" />
+              <Image src="/one-ring.svg" alt="" className="absolute inset-0 h-full w-full animate-ring-glow" />
               <span className="relative z-10 font-heading text-5xl font-bold text-ring drop-shadow-[0_0_12px_rgba(255,215,0,0.6)]">
                 {unanimousValue}
               </span>
@@ -63,7 +64,7 @@ export function VotingArea({ session, participantId, onVote }: Props) {
 
             {/* Ring inscription divider */}
             <div className="elvish-divider w-full" style={{ animationDelay: '0.6s' }}>
-              <img src="/ring-inscription.svg" alt="" className="h-3 w-full max-w-[12rem] opacity-40" />
+              <Image src="/ring-inscription.svg" alt="" className="h-3 w-full max-w-[12rem] opacity-40" />
             </div>
 
             {/* Banner message */}
