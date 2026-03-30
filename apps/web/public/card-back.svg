@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 120" fill="none">
+  <!-- Card background -->
+  <rect x="2" y="2" width="76" height="116" rx="6" fill="#1a1007" stroke="#b8860b" stroke-width="2"/>
+  <!-- Inner border -->
+  <rect x="8" y="8" width="64" height="104" rx="4" fill="none" stroke="#b8860b" stroke-width="0.8" opacity="0.4"/>
+  <!-- Central ring motif -->
+  <circle cx="40" cy="60" r="18" stroke="#b8860b" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="40" cy="60" r="14" stroke="#ffd700" stroke-width="0.8" opacity="0.3"/>
+  <path d="M26 60 Q33 55, 40 60 Q47 65, 54 60" stroke="#ffd700" stroke-width="1" opacity="0.4"/>
+  <!-- Corner ornaments -->
+  <path d="M14 14 L22 14 M14 14 L14 22" stroke="#b8860b" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  <path d="M66 14 L58 14 M66 14 L66 22" stroke="#b8860b" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  <path d="M14 106 L22 106 M14 106 L14 98" stroke="#b8860b" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  <path d="M66 106 L58 106 M66 106 L66 98" stroke="#b8860b" stroke-width="1" opacity="0.4" stroke-linecap="round"/>
+  <!-- Star top and bottom -->
+  <path d="M40 24 L42 28 L46 28 L43 31 L44 35 L40 32 L36 35 L37 31 L34 28 L38 28Z" fill="#b8860b" opacity="0.4"/>
+  <path d="M40 85 L42 89 L46 89 L43 92 L44 96 L40 93 L36 96 L37 92 L34 89 L38 89Z" fill="#b8860b" opacity="0.4"/>
+</svg>

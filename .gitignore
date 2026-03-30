@@ -1,0 +1,84 @@
+# ========================================
+# PNPM Store
+# ========================================
+.pnpm-store/
+
+
+# ========================================
+# .NET
+# ========================================
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.DotSettings.user
+project.lock.json
+.vs/
+TestResults/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# ========================================
+# Node / Frontend
+# ========================================
+node_modules/
+.next/
+.turbo/
+out/
+.vercel
+.cache
+
+# ========================================
+# IDE
+# ========================================
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================================
+# Environment / Secrets
+# ========================================
+.env
+.env.local
+.env.*.local
+*.local
+
+# ========================================
+# OS
+# ========================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========================================
+# Misc
+# ========================================
+*.log
+*.tmp
+*.bak
+*.orig
+
+worktrees/
+
+.claude/
+
+docs/
+specs/
+
+.codex/
+CLAUDE.md
+INSTRUCTIONS.md
+.github/copilot-instructions.md

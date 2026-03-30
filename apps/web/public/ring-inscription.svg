@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 20" fill="none">
+  <!-- Decorative elvish-style horizontal divider -->
+  <line x1="0" y1="10" x2="400" y2="10" stroke="#b8860b" stroke-width="0.5" opacity="0.3"/>
+  <!-- Ornamental curves resembling Tengwar script -->
+  <path d="M40 10 Q50 3, 60 10 Q70 17, 80 10" stroke="#b8860b" stroke-width="1.2" opacity="0.4"/>
+  <path d="M100 10 Q106 5, 112 10 Q118 15, 124 10 Q130 5, 136 10" stroke="#b8860b" stroke-width="1" opacity="0.35"/>
+  <path d="M160 10 Q170 4, 180 10 Q190 16, 200 10" stroke="#b8860b" stroke-width="1.2" opacity="0.4"/>
+  <path d="M220 10 Q226 5, 232 10 Q238 15, 244 10 Q250 5, 256 10" stroke="#b8860b" stroke-width="1" opacity="0.35"/>
+  <path d="M280 10 Q290 4, 300 10 Q310 16, 320 10" stroke="#b8860b" stroke-width="1.2" opacity="0.4"/>
+  <path d="M340 10 Q346 5, 352 10 Q358 15, 364 10" stroke="#b8860b" stroke-width="1" opacity="0.35"/>
+  <!-- Dots between script sections -->
+  <circle cx="90" cy="10" r="1.5" fill="#b8860b" opacity="0.3"/>
+  <circle cx="148" cy="10" r="1.5" fill="#b8860b" opacity="0.3"/>
+  <circle cx="210" cy="10" r="1.5" fill="#b8860b" opacity="0.3"/>
+  <circle cx="268" cy="10" r="1.5" fill="#b8860b" opacity="0.3"/>
+  <circle cx="330" cy="10" r="1.5" fill="#b8860b" opacity="0.3"/>
+  <!-- End ornaments -->
+  <circle cx="10" cy="10" r="3" fill="none" stroke="#b8860b" stroke-width="1" opacity="0.3"/>
+  <circle cx="390" cy="10" r="3" fill="none" stroke="#b8860b" stroke-width="1" opacity="0.3"/>
+</svg>

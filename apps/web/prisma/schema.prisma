@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SessionStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum RoundStatus {
+  VOTING
+  REVEALED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      AuthSession[]
+  createdSessions  Session[]       @relation("CreatedSessions")
+  participants     Participant[]
+  createdScales    EstimationScale[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Session {
+  id            String        @id @default(cuid())
+  name          String
+  inviteCode    String        @unique
+  status        SessionStatus @default(ACTIVE)
+  facilitatorId String?
+  scaleId       String
+  archivedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  facilitator   User?          @relation("CreatedSessions", fields: [facilitatorId], references: [id], onDelete: SetNull)
+  scale         EstimationScale @relation(fields: [scaleId], references: [id])
+  rounds        Round[]
+  participants  Participant[]
+}
+
+model Participant {
+  id          String   @id @default(cuid())
+  displayName String
+  sessionId   String
+  userId      String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id])
+  votes       Vote[]
+
+  @@unique([sessionId, displayName])
+}
+
+model Round {
+  id         String      @id @default(cuid())
+  sessionId  String
+  topic      String?
+  orderIndex Int
+  status     RoundStatus @default(VOTING)
+  revealedAt DateTime?
+  createdAt  DateTime    @default(now())
+
+  session    Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  votes      Vote[]
+
+  @@index([sessionId])
+}
+
+model Vote {
+  id            String   @id @default(cuid())
+  roundId       String
+  participantId String
+  value         String
+  createdAt     DateTime @default(now())
+
+  round         Round       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, participantId])
+}
+
+model EstimationScale {
+  id              String       @id @default(cuid())
+  name            String
+  isDefault       Boolean      @default(false)
+  createdByUserId String?
+  createdAt       DateTime     @default(now())
+
+  createdBy       User?        @relation(fields: [createdByUserId], references: [id])
+  values          ScaleValue[]
+  sessions        Session[]
+}
+
+model ScaleValue {
+  id           String          @id @default(cuid())
+  scaleId      String
+  label        String
+  numericValue Int?
+  sortOrder    Int
+
+  scale        EstimationScale @relation(fields: [scaleId], references: [id], onDelete: Cascade)
+
+  @@index([scaleId])
+}

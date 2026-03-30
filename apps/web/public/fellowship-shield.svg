@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" fill="none">
+  <!-- Shield shape -->
+  <path d="M20 2 L36 10 L36 28 Q36 40, 20 46 Q4 40, 4 28 L4 10Z" fill="rgba(184,134,11,0.1)" stroke="#b8860b" stroke-width="1.5"/>
+  <!-- Inner border -->
+  <path d="M20 6 L32 12 L32 28 Q32 38, 20 42 Q8 38, 8 28 L8 12Z" fill="none" stroke="#ffd700" stroke-width="0.6" opacity="0.4"/>
+  <!-- Star in center -->
+  <path d="M20 16 L22 22 L28 22 L23 26 L25 32 L20 28 L15 32 L17 26 L12 22 L18 22Z" fill="#b8860b" opacity="0.6"/>
+</svg>

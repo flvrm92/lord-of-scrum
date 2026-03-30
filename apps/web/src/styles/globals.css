@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 37 40% 92%;
+    --foreground: 25 30% 12%;
+    --card: 38 42% 95%;
+    --card-foreground: 25 30% 12%;
+    --popover: 38 42% 95%;
+    --popover-foreground: 25 30% 12%;
+    --primary: 150 28% 33%;
+    --primary-foreground: 38 42% 95%;
+    --secondary: 37 22% 83%;
+    --secondary-foreground: 25 30% 12%;
+    --muted: 37 18% 86%;
+    --muted-foreground: 25 12% 42%;
+    --accent: 37 50% 40%;
+    --accent-foreground: 38 42% 95%;
+    --destructive: 0 72% 40%;
+    --destructive-foreground: 38 42% 95%;
+    --border: 37 28% 75%;
+    --input: 37 28% 75%;
+    --ring: 43 85% 38%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 20 15% 6%;
+    --foreground: 37 30% 85%;
+    --card: 20 12% 10%;
+    --card-foreground: 37 30% 85%;
+    --popover: 20 12% 10%;
+    --popover-foreground: 37 30% 85%;
+    --primary: 43 85% 38%;
+    --primary-foreground: 20 15% 6%;
+    --secondary: 20 10% 16%;
+    --secondary-foreground: 37 30% 85%;
+    --muted: 20 8% 14%;
+    --muted-foreground: 37 15% 50%;
+    --accent: 0 60% 25%;
+    --accent-foreground: 37 30% 85%;
+    --destructive: 0 65% 35%;
+    --destructive-foreground: 37 30% 85%;
+    --border: 20 10% 18%;
+    --input: 20 10% 18%;
+    --ring: 43 85% 38%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(184, 134, 11, 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(74, 139, 158, 0.03) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(ellipse at 30% 70%, rgba(139, 0, 0, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 30%, rgba(184, 134, 11, 0.03) 0%, transparent 50%);
+  }
+}
+
+@layer components {
+  .lotr-card {
+    @apply rounded-lg border bg-card p-6;
+    border-color: hsl(37 28% 75%);
+    box-shadow:
+      0 1px 3px rgba(184, 134, 11, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .dark .lotr-card {
+    border-color: hsl(20 10% 18%);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .lotr-card-ornate {
+    @apply lotr-card;
+    border-width: 2px;
+    border-color: rgba(184, 134, 11, 0.3);
+    box-shadow:
+      0 2px 8px rgba(184, 134, 11, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  .dark .lotr-card-ornate {
+    border-color: rgba(184, 134, 11, 0.2);
+    box-shadow:
+      0 2px 8px rgba(184, 134, 11, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .vote-card {
+    @apply flex h-20 items-center justify-center rounded-lg border-2 text-xl font-subheading font-bold transition-all;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+  }
+
+  .vote-card:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.2);
+  }
+
+  .vote-card-selected {
+    border-color: #b8860b;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+    color: #b8860b;
+    box-shadow: 0 0 16px rgba(255, 215, 0, 0.2);
+  }
+
+  .shimmer-hover {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-hover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg,
+        transparent 25%,
+        rgba(255, 215, 0, 0.08) 50%,
+        transparent 75%);
+    background-size: 200% 100%;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .shimmer-hover:hover::after {
+    opacity: 1;
+    animation: shimmer 1.5s ease-in-out;
+  }
+
+  .elvish-divider {
+    @apply my-6 flex items-center justify-center gap-3;
+  }
+
+  .elvish-divider::before,
+  .elvish-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(184, 134, 11, 0.3),
+        transparent);
+  }
+
+  /* ─── Consensus celebration: "One Ring" effect ─── */
+
+  .consensus-glow {
+    border-color: rgba(255, 215, 0, 0.4) !important;
+    animation:
+      card-celebrate 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
+      glow-pulse 2.5s ease-in-out 0.7s infinite;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.08) 0%, transparent 60%);
+  }
+
+  .dark .consensus-glow {
+    border-color: rgba(255, 215, 0, 0.3) !important;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
+  }
+
+  .consensus-ring {
+    @apply relative flex items-center justify-center;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 9999px;
+    background:
+      radial-gradient(circle, rgba(255, 215, 0, 0.12) 0%, rgba(184, 134, 11, 0.04) 50%, transparent 70%);
+    animation:
+      ring-reveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+      glow-pulse 2.5s ease-in-out 0.8s infinite;
+  }
+
+  .dark .consensus-ring {
+    background:
+      radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, rgba(184, 134, 11, 0.03) 50%, transparent 70%);
+  }
+
+  .consensus-banner {
+    @apply font-heading text-lg tracking-wide;
+    color: #b8860b;
+    animation: inscription-reveal 0.6s ease-out 1s both;
+  }
+
+  .dark .consensus-banner {
+    color: #ffd700;
+  }
+
+  .consensus-subtitle {
+    @apply text-sm italic;
+    color: hsl(var(--muted-foreground));
+    animation: inscription-reveal 0.6s ease-out 1.3s both;
+  }
+}

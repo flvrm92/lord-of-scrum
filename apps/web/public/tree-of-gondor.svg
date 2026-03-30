@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" fill="currentColor">
+  <!-- Trunk -->
+  <rect x="47" y="80" width="6" height="40" rx="1" opacity="0.8"/>
+  <!-- Main canopy -->
+  <path d="M50 8 C50 8, 30 28, 30 50 C30 68, 38 78, 50 82 C62 78, 70 68, 70 50 C70 28, 50 8, 50 8Z" opacity="0.7"/>
+  <!-- Left branches -->
+  <path d="M35 70 C28 60, 22 65, 18 58" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M38 80 C30 75, 25 80, 20 75" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <!-- Right branches -->
+  <path d="M65 70 C72 60, 78 65, 82 58" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M62 80 C70 75, 75 80, 80 75" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <!-- Root lines -->
+  <path d="M42 118 L34 130" fill="none" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+  <path d="M58 118 L66 130" fill="none" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+  <path d="M50 120 L50 135" fill="none" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+  <!-- Stars -->
+  <circle cx="50" cy="4" r="2" opacity="0.5"/>
+  <circle cx="38" cy="12" r="1.2" opacity="0.3"/>
+  <circle cx="62" cy="12" r="1.2" opacity="0.3"/>
+</svg>

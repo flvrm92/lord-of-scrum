@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60" fill="none">
+  <!-- Outer eye shape -->
+  <path d="M5 30 Q25 2, 50 2 Q75 2, 95 30 Q75 58, 50 58 Q25 58, 5 30Z" stroke="#b8860b" stroke-width="2.5" fill="rgba(184,134,11,0.05)"/>
+  <!-- Inner iris -->
+  <ellipse cx="50" cy="30" rx="18" ry="24" stroke="#ffd700" stroke-width="1.5" opacity="0.5"/>
+  <!-- Pupil slit -->
+  <ellipse cx="50" cy="30" rx="4" ry="22" fill="#b8860b" opacity="0.8"/>
+  <!-- Glow lines -->
+  <path d="M10 30 Q30 12, 50 12" stroke="#ffd700" stroke-width="0.8" opacity="0.3"/>
+  <path d="M90 30 Q70 12, 50 12" stroke="#ffd700" stroke-width="0.8" opacity="0.3"/>
+  <path d="M10 30 Q30 48, 50 48" stroke="#ffd700" stroke-width="0.8" opacity="0.3"/>
+  <path d="M90 30 Q70 48, 50 48" stroke="#ffd700" stroke-width="0.8" opacity="0.3"/>
+</svg>
