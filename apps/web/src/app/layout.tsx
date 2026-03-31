@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Cinzel, Cinzel_Decorative } from 'next/font/google'
 import { Providers } from './providers'
 import { ThemeToggle } from './theme-toggle'
+import { UserMenu } from './user-menu'
 import '@/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -43,7 +44,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   Lord of Scrum
                 </span>
               </a>
-              <ThemeToggle />
+              <div className="flex items-center gap-3">
+                <UserMenu />
+                <ThemeToggle />
+              </div>
             </div>
           </header>
           <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>

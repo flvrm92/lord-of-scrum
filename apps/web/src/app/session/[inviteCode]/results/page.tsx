@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import type { RoundDto } from '@/application/dtos'
-import Image from 'next/image'
 
 interface Props {
   params: { inviteCode: string }
@@ -37,7 +36,7 @@ export default function ResultsPage({ params }: Props) {
   if (error) return <p className="text-destructive py-8 text-center">{error}</p>
   if (!data) return (
     <div className="flex flex-col items-center gap-4 py-16">
-      <Image src="/one-ring.svg" alt="" className="h-12 w-12 animate-spin" style={{ animationDuration: '3s' }} />
+      <img src="/one-ring.svg" alt="" className="h-12 w-12 animate-spin" style={{ animationDuration: '3s' }} />
       <p className="font-subheading text-muted-foreground italic">Consulting the Palantir...</p>
     </div>
   )

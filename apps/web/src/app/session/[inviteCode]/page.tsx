@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import Image from 'next/image'
 import { getAblyClient } from '@/lib/ably-client'
 import type { SessionDto, ParticipantDto } from '@/application/dtos'
 import { VotingArea } from '@/features/voting/voting-area'
@@ -92,7 +91,7 @@ export default function SessionPage({ params }: Props) {
   if (fetchError) {
     return (
       <div className="flex flex-col items-center gap-4 py-16">
-        <Image src="/tree-of-gondor.svg" alt="" className="h-16 w-16 text-muted-foreground/20" />
+        <img src="/tree-of-gondor.svg" alt="" className="h-16 w-16 text-muted-foreground/20" />
         <p className="font-subheading text-destructive">This path leads nowhere... The council has dispersed.</p>
         <a href="/" className="font-subheading text-sm text-gold underline">Return to the Shire</a>
       </div>
@@ -102,7 +101,7 @@ export default function SessionPage({ params }: Props) {
   if (!sessionData || !participant) {
     return (
       <div className="flex flex-col items-center gap-4 py-16">
-        <Image src="/one-ring.svg" alt="" className="h-12 w-12 animate-spin" style={{ animationDuration: '3s' }} />
+        <img src="/one-ring.svg" alt="" className="h-12 w-12 animate-spin" style={{ animationDuration: '3s' }} />
         <p className="font-subheading text-muted-foreground italic">Consulting the Palantir...</p>
       </div>
     )
@@ -119,11 +118,11 @@ export default function SessionPage({ params }: Props) {
         </div>
         <div className="text-right text-sm text-muted-foreground">
           <p>Playing as <span className="font-semibold text-foreground">{participant.displayName}</span></p>
-          {participant.isHost && <span className="flex items-center justify-end gap-1 text-xs text-gold"><Image src="/fellowship-shield.svg" alt="" className="h-3 w-3" /> Steward</span>}
+          {participant.isHost && <span className="flex items-center justify-end gap-1 text-xs text-gold"><img src="/fellowship-shield.svg" alt="" className="h-3 w-3" /> Steward</span>}
         </div>
       </div>
 
-      <div className="elvish-divider"><Image src="/ring-inscription.svg" alt="" className="h-3 w-full max-w-xs opacity-40" /></div>
+      <div className="elvish-divider"><img src="/ring-inscription.svg" alt="" className="h-3 w-full max-w-xs opacity-40" /></div>
 
       <div className="grid gap-6 md:grid-cols-[1fr_280px]">
         <div className="flex flex-col gap-6">

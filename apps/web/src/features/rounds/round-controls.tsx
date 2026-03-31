@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import type { RoundDto } from '@/application/dtos'
-import Image from 'next/image'
 
 interface Props {
   sessionId: string
@@ -65,7 +64,7 @@ export function RoundControls({ sessionId, participantId, currentRound, onAction
   return (
     <div className="rounded-lg border-2 border-gold/20 bg-gradient-to-br from-gold/5 to-transparent p-4">
       <h3 className="mb-3 flex items-center gap-2 font-subheading text-xs font-semibold uppercase tracking-widest text-gold">
-        <Image src="/fellowship-shield.svg" alt="" className="h-4 w-4" />
+        <img src="/fellowship-shield.svg" alt="" className="h-4 w-4" />
         Steward&apos;s Commands
       </h3>
 
@@ -96,7 +95,7 @@ export function RoundControls({ sessionId, participantId, currentRound, onAction
             disabled={isLoading}
             className="flex items-center gap-2 rounded-md bg-gold px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-gold/90 hover:shadow-[0_0_12px_rgba(184,134,11,0.3)] disabled:opacity-50"
           >
-            <Image src="/eye-of-sauron.svg" alt="" className="h-4 w-6" />
+            <img src="/eye-of-sauron.svg" alt="" className="h-4 w-6" />
             The Eye Reveals All
           </button>
           <button

@@ -1,7 +1,6 @@
 'use client'
 
 import type { ParticipantDto, RoundDto } from '@/application/dtos'
-import Image from 'next/image'
 
 interface Props {
   participants: ParticipantDto[]
@@ -13,7 +12,7 @@ export function ParticipantList({ participants, currentRound, currentParticipant
   return (
     <div className="lotr-card !p-4">
       <h3 className="mb-3 flex items-center gap-2 font-subheading text-xs font-semibold uppercase tracking-widest text-gold">
-        <Image src="/fellowship-shield.svg" alt="" className="h-4 w-4" />
+        <img src="/fellowship-shield.svg" alt="" className="h-4 w-4" />
         The Fellowship ({participants.length})
       </h3>
       <div className="flex flex-col gap-2">
@@ -34,7 +33,7 @@ export function ParticipantList({ participants, currentRound, currentParticipant
                 </span>
                 {p.isHost && (
                   <span className="flex items-center gap-1 rounded bg-gold/10 px-1.5 py-0.5 text-xs font-medium text-gold">
-                    <Image src="/fellowship-shield.svg" alt="" className="h-3 w-3" />
+                    <img src="/fellowship-shield.svg" alt="" className="h-3 w-3" />
                     Steward
                   </span>
                 )}
