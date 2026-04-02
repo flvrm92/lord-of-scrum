@@ -15,12 +15,12 @@ export default function SignInPage() {
         >
           Continue with GitHub
         </button>
-        <button
+        {/* <button
           onClick={() => signIn('google', { callbackUrl: '/' })}
           className="rounded-md border border-border bg-card px-4 py-2.5 font-subheading text-sm font-medium transition-colors hover:bg-secondary"
         >
           Continue with Google
-        </button>
+        </button> */}
       </div>
       <a href="/" className="font-subheading text-sm text-muted-foreground underline">Return to the Shire</a>
     </div>
