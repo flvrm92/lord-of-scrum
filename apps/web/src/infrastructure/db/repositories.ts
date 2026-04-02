@@ -1,5 +1,5 @@
 import { prisma } from './client'
-import type { SessionRepository, ParticipantRepository, RoundRepository, VoteRepository, ScaleRepository } from '@/application/ports'
+import type { SessionRepository, ParticipantRepository, RoundRepository, VoteRepository, ScaleRepository, UserRepository } from '@/application/ports'
 
 export const sessionRepository: SessionRepository = {
   async findById(id) {
@@ -44,7 +44,12 @@ export const participantRepository: ParticipantRepository = {
   },
 
   async findBySessionId(sessionId) {
-    return prisma.participant.findMany({ where: { sessionId }, orderBy: { createdAt: 'asc' } })
+    const rows = await prisma.participant.findMany({
+      where: { sessionId },
+      orderBy: { createdAt: 'asc' },
+      include: { user: { select: { lotrTitle: true } } },
+    })
+    return rows.map((p) => ({ ...p, lotrTitle: p.user?.lotrTitle ?? null }))
   },
 
   async findBySessionAndName(sessionId, displayName) {
@@ -134,6 +139,22 @@ export const scaleRepository: ScaleRepository = {
     return prisma.estimationScale.findUnique({
       where: { id },
       include: { values: { orderBy: { sortOrder: 'asc' } } },
+    })
+  },
+}
+
+export const userRepository: UserRepository = {
+  async findById(id) {
+    return prisma.user.findUnique({
+      where: { id },
+      select: { id: true, lotrTitle: true },
+    })
+  },
+
+  async updateTitle(id, title) {
+    await prisma.user.update({
+      where: { id },
+      data: { lotrTitle: title },
     })
   },
 }

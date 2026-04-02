@@ -5,6 +5,7 @@ import {
   roundRepository,
   voteRepository,
   scaleRepository,
+  userRepository,
 } from '@/infrastructure/db'
 import { ablyPublisher } from '@/infrastructure/realtime/ably-publisher'
 
@@ -15,4 +16,5 @@ export const deps: UseCaseDeps = {
   voteRepo: voteRepository,
   scaleRepo: scaleRepository,
   eventPublisher: ablyPublisher,
+  userRepo: userRepository,
 }

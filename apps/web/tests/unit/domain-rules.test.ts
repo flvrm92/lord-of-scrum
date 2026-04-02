@@ -5,6 +5,9 @@ import {
   validateVoteValue,
   assertRoundVoting,
   detectDivergence,
+  getRandomLotrTitle,
+  formatDisplayWithTitle,
+  LOTR_TITLES,
 } from '@/domain/rules'
 import { InvalidDisplayNameError, InvalidVoteValueError, RoundNotVotingError } from '@/domain/errors'
 import type { ScaleValue } from '@/domain/entities'
@@ -107,5 +110,40 @@ describe('detectDivergence', () => {
     const votes = [{ value: '?' }, { value: '?' }]
     const result = detectDivergence(votes, fibValues)
     expect(result.isDiverged).toBe(false)
+  })
+})
+
+describe('getRandomLotrTitle', () => {
+  it('returns a string from the curated list', () => {
+    const title = getRandomLotrTitle()
+    expect(typeof title).toBe('string')
+    expect(LOTR_TITLES).toContain(title)
+  })
+
+  it('returns varied titles over many calls', () => {
+    const titles = new Set(Array.from({ length: 200 }, () => getRandomLotrTitle()))
+    // With 40 titles and 200 draws, we should see many distinct ones
+    expect(titles.size).toBeGreaterThan(10)
+  })
+
+  it('never returns an empty string', () => {
+    for (let i = 0; i < 50; i++) {
+      expect(getRandomLotrTitle().length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('formatDisplayWithTitle', () => {
+  it('formats name and title with a comma', () => {
+    expect(formatDisplayWithTitle('Gandalf', 'Grey Pilgrim')).toBe('Gandalf, Grey Pilgrim')
+  })
+
+  it('handles names with spaces', () => {
+    expect(formatDisplayWithTitle('Frodo Baggins', 'Ringbearer')).toBe('Frodo Baggins, Ringbearer')
+  })
+
+  it('returns the exact format "Name, Title"', () => {
+    const result = formatDisplayWithTitle('Aragorn', 'King of Gondor')
+    expect(result).toMatch(/^.+, .+$/)
   })
 })

@@ -67,3 +67,15 @@ export class RoundNotFoundError extends DomainError {
     super('Round not found', 'ROUND_NOT_FOUND')
   }
 }
+
+export class CannotRemoveSelfAsHostError extends DomainError {
+  constructor() {
+    super('The host cannot remove themselves from the session', 'CANNOT_REMOVE_SELF_AS_HOST')
+  }
+}
+
+export class NotParticipantError extends DomainError {
+  constructor() {
+    super('Requester is not a participant in this session', 'NOT_PARTICIPANT')
+  }
+}

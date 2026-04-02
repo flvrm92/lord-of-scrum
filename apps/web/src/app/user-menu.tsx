@@ -1,10 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import Image from 'next/image'
 
 export function UserMenu() {
   const { data: session, status } = useSession()
+  const [lotrTitle, setLotrTitle] = useState<string | null | undefined>(undefined)
+  const [isRerolling, setIsRerolling] = useState(false)
 
   if (status === 'loading') {
     return <div className="h-8 w-8 animate-pulse rounded-full bg-parchment/10" />
@@ -21,12 +24,28 @@ export function UserMenu() {
     )
   }
 
+  // Use local state (post-reroll) or fall back to session value
+  const displayTitle = lotrTitle !== undefined ? lotrTitle : (session.user.lotrTitle ?? null)
+
   const initials = (session.user.name ?? session.user.email ?? '?')
     .split(' ')
     .map((w) => w[0])
     .slice(0, 2)
     .join('')
     .toUpperCase()
+
+  const handleReroll = async () => {
+    setIsRerolling(true)
+    try {
+      const res = await fetch('/api/users/me/reroll-title', { method: 'POST' })
+      if (res.ok) {
+        const data = await res.json()
+        setLotrTitle(data.lotrTitle)
+      }
+    } finally {
+      setIsRerolling(false)
+    }
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -44,9 +63,24 @@ export function UserMenu() {
           {initials}
         </span>
       )}
-      <span className="hidden font-subheading text-sm text-parchment/80 sm:inline">
-        {session.user.name ?? 'Traveler'}
-      </span>
+      <div className="hidden flex-col sm:flex">
+        <span className="font-subheading text-sm text-parchment/80">
+          {session.user.name ?? 'Traveler'}
+        </span>
+        {displayTitle && (
+          <div className="flex items-center gap-1">
+            <span className="text-[11px] italic text-gold/70">{displayTitle}</span>
+            <button
+              onClick={handleReroll}
+              disabled={isRerolling}
+              title="Reroll title"
+              className="text-[10px] text-parchment/30 transition-colors hover:text-gold/60 disabled:opacity-40"
+            >
+              {isRerolling ? '…' : '⟳'}
+            </button>
+          </div>
+        )}
+      </div>
       <button
         onClick={() => signOut({ callbackUrl: '/' })}
         className="rounded-md px-2 py-1 font-subheading text-xs text-parchment/50 transition-colors hover:text-ring"

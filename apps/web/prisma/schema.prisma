@@ -23,6 +23,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  lotrTitle     String?
   accounts      Account[]
   sessions      AuthSession[]
   createdSessions  Session[]       @relation("CreatedSessions")

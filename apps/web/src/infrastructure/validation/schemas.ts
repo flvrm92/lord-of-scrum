@@ -23,3 +23,7 @@ export const startRoundSchema = z.object({
 export const hostActionSchema = z.object({
   participantId: z.string().min(1),
 })
+
+export const removeParticipantSchema = z.object({
+  requesterId: z.string().min(1),
+})

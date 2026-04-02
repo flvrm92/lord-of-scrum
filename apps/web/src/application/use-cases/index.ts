@@ -5,6 +5,7 @@ import type {
   VoteRepository,
   ScaleRepository,
   SessionEventPublisher,
+  UserRepository,
 } from '@/application/ports'
 import type {
   CreateSessionInput,
@@ -14,11 +15,13 @@ import type {
   RevealRoundInput,
   ResetRoundInput,
   ArchiveSessionInput,
+  RerollTitleInput,
+  RemoveParticipantInput,
   SessionDto,
   RoundDto,
   ScaleDto,
 } from '@/application/dtos'
-import { generateInviteCode, validateDisplayName, validateVoteValue, assertRoundVoting, detectDivergence } from '@/domain/rules'
+import { generateInviteCode, validateDisplayName, validateVoteValue, assertRoundVoting, detectDivergence, getRandomLotrTitle } from '@/domain/rules'
 import {
   SessionNotFoundError,
   SessionNotActiveError,
@@ -26,6 +29,8 @@ import {
   NotHostError,
   ParticipantNotFoundError,
   RoundNotFoundError,
+  CannotRemoveSelfAsHostError,
+  NotParticipantError,
 } from '@/domain/errors'
 
 // ---------- Dependencies Container ----------
@@ -37,6 +42,7 @@ export interface UseCaseDeps {
   voteRepo: VoteRepository
   scaleRepo: ScaleRepository
   eventPublisher: SessionEventPublisher
+  userRepo: UserRepository
 }
 
 // ---------- Helper: determine if participant is host ----------
@@ -72,6 +78,7 @@ function toSessionDto(
       displayName: p.displayName,
       isHost: i === 0, // first participant is the host
       isActive: p.isActive,
+      lotrTitle: p.lotrTitle,
     })),
     currentRound: currentRound
       ? {
@@ -95,9 +102,41 @@ function toSessionDto(
 
 // ---------- Use Cases ----------
 
+// ---------- Private Helper: assign LOTR title if user doesn't have one ----------
+
+async function assignTitleIfMissing(deps: UseCaseDeps, userId: string): Promise<string | null> {
+  const user = await deps.userRepo.findById(userId)
+  if (!user) return null
+  if (user.lotrTitle) return user.lotrTitle
+  const title = getRandomLotrTitle()
+  await deps.userRepo.updateTitle(userId, title)
+  return title
+}
+
+// ---------- Exported Title Use Cases ----------
+
+export async function assignTitle(deps: UseCaseDeps, userId: string): Promise<string | null> {
+  return assignTitleIfMissing(deps, userId)
+}
+
+export async function rerollTitle(deps: UseCaseDeps, input: RerollTitleInput): Promise<string> {
+  const user = await deps.userRepo.findById(input.userId)
+  let newTitle: string
+  do {
+    newTitle = getRandomLotrTitle()
+  } while (user?.lotrTitle != null && newTitle === user.lotrTitle)
+  await deps.userRepo.updateTitle(input.userId, newTitle)
+  return newTitle
+}
+
 export async function createSession(deps: UseCaseDeps, input: CreateSessionInput): Promise<SessionDto> {
   const displayName = validateDisplayName(input.hostDisplayName)
   const inviteCode = generateInviteCode()
+
+  // Assign LOTR title if user is authenticated and doesn't have one yet
+  if (input.userId) {
+    await assignTitleIfMissing(deps, input.userId)
+  }
 
   const session = await deps.sessionRepo.create({
     name: input.name,
@@ -106,14 +145,15 @@ export async function createSession(deps: UseCaseDeps, input: CreateSessionInput
     facilitatorId: input.userId,
   })
 
-  const host = await deps.participantRepo.create({
+  await deps.participantRepo.create({
     sessionId: session.id,
     userId: input.userId,
     displayName,
   })
 
   const fullSession = await deps.sessionRepo.findById(session.id)
-  return toSessionDto(fullSession, [host], null, [])
+  const participants = await deps.participantRepo.findBySessionId(session.id)
+  return toSessionDto(fullSession, participants, null, [])
 }
 
 export async function joinSession(deps: UseCaseDeps, input: JoinSessionInput) {
@@ -124,6 +164,12 @@ export async function joinSession(deps: UseCaseDeps, input: JoinSessionInput) {
 
   const existing = await deps.participantRepo.findBySessionAndName(session.id, displayName)
   if (existing) throw new DuplicateDisplayNameError(displayName)
+
+  // Assign LOTR title if user is authenticated and doesn't have one yet
+  let lotrTitle: string | null = null
+  if (input.userId) {
+    lotrTitle = await assignTitleIfMissing(deps, input.userId)
+  }
 
   const participant = await deps.participantRepo.create({
     sessionId: session.id,
@@ -145,6 +191,7 @@ export async function joinSession(deps: UseCaseDeps, input: JoinSessionInput) {
       displayName: participant.displayName,
       isHost: false,
       isActive: participant.isActive,
+      lotrTitle,
     },
   }
 }
@@ -323,4 +370,26 @@ export async function cleanupStaleSessions(deps: UseCaseDeps, maxAgeHours = 72):
   if (stale.length === 0) return 0
   await deps.sessionRepo.deleteMany(stale.map((s) => s.id))
   return stale.length
+}
+
+export async function removeParticipant(deps: UseCaseDeps, input: RemoveParticipantInput): Promise<void> {
+  const participants = await deps.participantRepo.findBySessionId(input.sessionId)
+
+  const target = participants.find((p) => p.id === input.participantId)
+  if (!target) throw new ParticipantNotFoundError()
+
+  const requester = participants.find((p) => p.id === input.requesterId)
+  if (!requester) throw new NotParticipantError()
+
+  const requesterIsHost = isHost(input.requesterId, participants)
+  const isSelfRemoval = input.requesterId === input.participantId
+
+  // Host cannot remove themselves
+  if (requesterIsHost && isSelfRemoval) throw new CannotRemoveSelfAsHostError()
+
+  // Non-host can only remove themselves (leave)
+  if (!requesterIsHost && !isSelfRemoval) throw new NotHostError()
+
+  await deps.participantRepo.updateActive(input.participantId, false)
+  await deps.eventPublisher.participantLeft(input.sessionId, input.participantId)
 }

@@ -5,4 +5,5 @@ export {
   roundRepository,
   voteRepository,
   scaleRepository,
+  userRepository,
 } from './repositories'

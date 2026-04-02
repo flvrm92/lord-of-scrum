@@ -1,4 +1,5 @@
 import { type RoundStatus, type ScaleValue } from '@/domain/entities'
+export { getRandomLotrTitle, formatDisplayWithTitle, LOTR_TITLES } from './lotr-titles'
 import { InvalidDisplayNameError, InvalidVoteValueError, RoundNotVotingError } from '@/domain/errors'
 
 const INVITE_CODE_LENGTH = 8

@@ -40,6 +40,16 @@ export interface ArchiveSessionInput {
   participantId: string
 }
 
+export interface RerollTitleInput {
+  userId: string
+}
+
+export interface RemoveParticipantInput {
+  sessionId: string
+  participantId: string
+  requesterId: string
+}
+
 // ---------- Output DTOs ----------
 
 export interface SessionDto {
@@ -58,6 +68,7 @@ export interface ParticipantDto {
   displayName: string
   isHost: boolean
   isActive: boolean
+  lotrTitle: string | null
 }
 
 export interface RoundDto {

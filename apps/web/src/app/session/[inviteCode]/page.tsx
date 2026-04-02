@@ -98,6 +98,18 @@ export default function SessionPage({ params }: Props) {
     )
   }
 
+  // Dismissed state: participant is in the session but marked inactive
+  if (sessionData && participant && !participant.isActive) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-16 text-center">
+        <img src="/tree-of-gondor.svg" alt="" className="h-16 w-16 text-muted-foreground/20" />
+        <h2 className="font-heading text-2xl text-elvish">You have been dismissed from this council</h2>
+        <p className="font-subheading text-muted-foreground italic">The Steward has spoken. Your counsel is no longer required.</p>
+        <a href="/" className="font-subheading text-sm text-gold underline">Return to the Shire</a>
+      </div>
+    )
+  }
+
   if (!sessionData || !participant) {
     return (
       <div className="flex flex-col items-center gap-4 py-16">
@@ -146,6 +158,8 @@ export default function SessionPage({ params }: Props) {
           participants={sessionData.participants}
           currentRound={sessionData.currentRound}
           currentParticipantId={participant.id}
+          sessionId={sessionData.id}
+          onParticipantRemoved={() => fetchSession(sessionData.id)}
         />
       </div>
     </div>

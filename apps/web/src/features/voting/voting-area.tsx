@@ -72,16 +72,22 @@ export function VotingArea({ session, participantId, onVote }: Props) {
 
             {/* Voter breakdown — smaller, below the celebration */}
             <div className="mt-2 grid w-full grid-cols-3 gap-2 sm:grid-cols-4">
-              {currentRound.votes.map((vote, i) => (
-                <div
-                  key={vote.participantId}
-                  className="flex flex-col items-center gap-0.5 rounded-md border border-gold/20 bg-background/50 p-2 animate-fade-in"
-                  style={{ animationDelay: `${800 + i * 80}ms`, animationFillMode: 'backwards' }}
-                >
-                  <span className="font-subheading text-sm font-bold text-gold/70">{vote.value}</span>
-                  <span className="text-[10px] text-muted-foreground">{vote.displayName}</span>
-                </div>
-              ))}
+              {currentRound.votes.map((vote, i) => {
+                const participant = session.participants.find((p) => p.id === vote.participantId)
+                return (
+                  <div
+                    key={vote.participantId}
+                    className="flex flex-col items-center gap-0.5 rounded-md border border-gold/20 bg-background/50 p-2 animate-fade-in"
+                    style={{ animationDelay: `${800 + i * 80}ms`, animationFillMode: 'backwards' }}
+                  >
+                    <span className="font-subheading text-sm font-bold text-gold/70">{vote.value}</span>
+                    <span className="text-[10px] text-muted-foreground">{vote.displayName}</span>
+                    {participant?.lotrTitle && (
+                      <span className="text-[9px] italic text-gold/50">{participant.lotrTitle}</span>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -93,16 +99,22 @@ export function VotingArea({ session, participantId, onVote }: Props) {
         <h3 className="mb-4 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {currentRound.votes.map((vote, i) => (
-            <div
-              key={vote.participantId}
-              className="flex flex-col items-center gap-1 rounded-lg border-2 border-gold/30 bg-background p-3 animate-fade-in"
-              style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'backwards' }}
-            >
-              <span className="font-subheading text-2xl font-bold text-gold">{vote.value}</span>
-              <span className="text-xs text-muted-foreground">{vote.displayName}</span>
-            </div>
-          ))}
+          {currentRound.votes.map((vote, i) => {
+            const participant = session.participants.find((p) => p.id === vote.participantId)
+            return (
+              <div
+                key={vote.participantId}
+                className="flex flex-col items-center gap-1 rounded-lg border-2 border-gold/30 bg-background p-3 animate-fade-in"
+                style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'backwards' }}
+              >
+                <span className="font-subheading text-2xl font-bold text-gold">{vote.value}</span>
+                <span className="text-xs text-muted-foreground">{vote.displayName}</span>
+                {participant?.lotrTitle && (
+                  <span className="text-[10px] italic text-gold/60">{participant.lotrTitle}</span>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     )

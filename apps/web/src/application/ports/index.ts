@@ -1,4 +1,4 @@
-import type { Session, Participant, Round, Vote, EstimationScale, ScaleValue } from '@/domain/entities'
+import type { Session, Participant, Round, Vote, EstimationScale, ScaleValue, User } from '@/domain/entities'
 
 // ---------- Repository Ports ----------
 
@@ -18,7 +18,7 @@ export interface SessionRepository {
 
 export interface ParticipantRepository {
   findById(id: string): Promise<Participant | null>
-  findBySessionId(sessionId: string): Promise<Participant[]>
+  findBySessionId(sessionId: string): Promise<(Participant & { lotrTitle: string | null })[]>
   findBySessionAndName(sessionId: string, displayName: string): Promise<Participant | null>
   create(data: {
     sessionId: string
@@ -47,6 +47,11 @@ export interface VoteRepository {
 export interface ScaleRepository {
   findAll(): Promise<(EstimationScale & { values: ScaleValue[] })[]>
   findById(id: string): Promise<(EstimationScale & { values: ScaleValue[] }) | null>
+}
+
+export interface UserRepository {
+  findById(id: string): Promise<Pick<User, 'id' | 'lotrTitle'> | null>
+  updateTitle(id: string, title: string): Promise<void>
 }
 
 // ---------- Event Publisher Port ----------

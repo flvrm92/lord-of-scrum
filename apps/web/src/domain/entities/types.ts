@@ -3,6 +3,15 @@
 export type SessionStatus = 'ACTIVE' | 'ARCHIVED'
 export type RoundStatus = 'VOTING' | 'REVEALED'
 
+export interface User {
+  id: string
+  name: string | null
+  email: string | null
+  lotrTitle: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Session {
   id: string
   name: string
