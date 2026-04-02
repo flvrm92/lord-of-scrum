@@ -20,8 +20,10 @@ import type {
   SessionDto,
   RoundDto,
   ScaleDto,
+  SessionSummaryDto,
+  RoundSummaryDto,
 } from '@/application/dtos'
-import { generateInviteCode, validateDisplayName, validateVoteValue, assertRoundVoting, detectDivergence, getRandomLotrTitle } from '@/domain/rules'
+import { generateInviteCode, validateDisplayName, validateVoteValue, assertRoundVoting, detectDivergence, getRandomLotrTitle, computeRoundStatistics } from '@/domain/rules'
 import {
   SessionNotFoundError,
   SessionNotActiveError,
@@ -59,6 +61,7 @@ function toSessionDto(
   participants: Awaited<ReturnType<ParticipantRepository['findBySessionId']>>,
   currentRound: Awaited<ReturnType<RoundRepository['findById']>> | null,
   votes: Awaited<ReturnType<VoteRepository['findByRoundId']>>,
+  currentParticipantId?: string | null,
 ): SessionDto {
   if (!session) throw new SessionNotFoundError()
   return {
@@ -88,10 +91,13 @@ function toSessionDto(
         orderIndex: currentRound.orderIndex,
         votes: votes.map((v) => {
           const participant = participants.find((p) => p.id === v.participantId)
+          // During VOTING: only reveal the requesting participant's own vote
+          const isOwn = currentParticipantId != null && v.participantId === currentParticipantId
+          const revealValue = currentRound.status === 'REVEALED' || isOwn
           return {
             participantId: v.participantId,
             displayName: participant?.displayName ?? 'Unknown',
-            value: currentRound.status === 'REVEALED' ? v.value : null,
+            value: revealValue ? v.value : null,
           }
         }),
       }
@@ -303,7 +309,7 @@ export async function archiveSession(deps: UseCaseDeps, input: ArchiveSessionInp
   await deps.eventPublisher.sessionArchived(input.sessionId)
 }
 
-export async function getSession(deps: UseCaseDeps, sessionId: string): Promise<SessionDto> {
+export async function getSession(deps: UseCaseDeps, sessionId: string, currentParticipantId?: string | null): Promise<SessionDto> {
   const session = await deps.sessionRepo.findById(sessionId)
   if (!session) throw new SessionNotFoundError()
 
@@ -312,10 +318,10 @@ export async function getSession(deps: UseCaseDeps, sessionId: string): Promise<
   const currentRound = rounds.length > 0 ? rounds[rounds.length - 1] : null
   const votes = currentRound ? await deps.voteRepo.findByRoundId(currentRound.id) : []
 
-  return toSessionDto(session, participants, currentRound, votes)
+  return toSessionDto(session, participants, currentRound, votes, currentParticipantId)
 }
 
-export async function getSessionByInviteCode(deps: UseCaseDeps, inviteCode: string): Promise<SessionDto> {
+export async function getSessionByInviteCode(deps: UseCaseDeps, inviteCode: string, currentParticipantId?: string | null): Promise<SessionDto> {
   const session = await deps.sessionRepo.findByInviteCode(inviteCode)
   if (!session) throw new SessionNotFoundError()
 
@@ -324,7 +330,7 @@ export async function getSessionByInviteCode(deps: UseCaseDeps, inviteCode: stri
   const currentRound = rounds.length > 0 ? rounds[rounds.length - 1] : null
   const votes = currentRound ? await deps.voteRepo.findByRoundId(currentRound.id) : []
 
-  return toSessionDto(session, participants, currentRound, votes)
+  return toSessionDto(session, participants, currentRound, votes, currentParticipantId)
 }
 
 export async function getSessionHistory(deps: UseCaseDeps, sessionId: string) {
@@ -392,4 +398,46 @@ export async function removeParticipant(deps: UseCaseDeps, input: RemoveParticip
 
   await deps.participantRepo.updateActive(input.participantId, false)
   await deps.eventPublisher.participantLeft(input.sessionId, input.participantId)
+}
+
+export async function getSessionSummary(deps: UseCaseDeps, sessionId: string): Promise<SessionSummaryDto> {
+  const session = await deps.sessionRepo.findById(sessionId)
+  if (!session) throw new SessionNotFoundError()
+
+  const rounds = await deps.roundRepo.findBySessionId(sessionId)
+  const revealedRounds = rounds.filter((r) => r.status === 'REVEALED')
+
+  const roundDtos: RoundSummaryDto[] = await Promise.all(
+    revealedRounds.map(async (r) => {
+      const votes = await deps.voteRepo.findByRoundId(r.id)
+      const stats = computeRoundStatistics(votes, session.scale.values)
+
+      const entries = [...stats.distribution.entries()]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([label, count]) => ({
+          label,
+          count,
+          percentage: stats.voteCount > 0 ? Math.round((count / stats.voteCount) * 100) : 0,
+        }))
+
+      return {
+        roundId: r.id,
+        topic: r.topic,
+        orderIndex: r.orderIndex,
+        voteCount: stats.voteCount,
+        average: stats.average,
+        median: stats.median,
+        mode: stats.mode,
+        distribution: entries,
+        divergence: stats.divergence,
+      }
+    }),
+  )
+
+  return {
+    sessionId: session.id,
+    sessionName: session.name,
+    totalRounds: rounds.length,
+    rounds: roundDtos,
+  }
 }

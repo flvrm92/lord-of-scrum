@@ -4,12 +4,13 @@ import { deps } from '@/lib/deps'
 import { handleApiError } from '@/lib/api-error'
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { inviteCode: string } },
 ) {
   try {
     const { inviteCode } = params
-    const session = await getSessionByInviteCode(deps, inviteCode)
+    const participantId = request.nextUrl.searchParams.get('participantId')
+    const session = await getSessionByInviteCode(deps, inviteCode, participantId)
     return NextResponse.json(session)
   } catch (error) {
     return handleApiError(error)

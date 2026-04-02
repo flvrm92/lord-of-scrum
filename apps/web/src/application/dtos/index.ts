@@ -96,3 +96,35 @@ export interface ScaleValueDto {
   numericValue: number | null
   sortOrder: number
 }
+
+// ---------- Session Summary DTOs ----------
+
+export interface VoteDistributionEntry {
+  label: string
+  count: number
+  percentage: number
+}
+
+export interface RoundSummaryDto {
+  roundId: string
+  topic: string | null
+  orderIndex: number
+  voteCount: number
+  average: number | null
+  median: number | null
+  mode: string | null
+  distribution: VoteDistributionEntry[]
+  divergence: {
+    isDiverged: boolean
+    spread: number | null
+    min: string | null
+    max: string | null
+  }
+}
+
+export interface SessionSummaryDto {
+  sessionId: string
+  sessionName: string
+  totalRounds: number
+  rounds: RoundSummaryDto[]
+}

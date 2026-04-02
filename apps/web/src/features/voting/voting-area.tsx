@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import type { SessionDto } from '@/application/dtos'
+import { useState, useEffect } from 'react'
+import type { SessionDto, RoundSummaryDto } from '@/application/dtos'
+import { VoteDistributionChart } from './vote-distribution-chart'
+import { RoundStatsBanner } from './round-stats-banner'
 
 interface Props {
   session: SessionDto
@@ -10,9 +12,42 @@ interface Props {
 }
 
 export function VotingArea({ session, participantId, onVote }: Props) {
-  const [selectedValue, setSelectedValue] = useState<string | null>(null)
+  // Optimistic local selection (cleared when server confirms)
+  const [optimisticValue, setOptimisticValue] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [justChanged, setJustChanged] = useState(false)
+  const [roundSummary, setRoundSummary] = useState<RoundSummaryDto | null>(null)
   const currentRound = session.currentRound
+
+  // Server-confirmed own vote (the server returns our own value during VOTING)
+  const serverMyVote = currentRound?.votes.find((v) => v.participantId === participantId)?.value ?? null
+
+  // Active selection: optimistic takes precedence, then server value
+  const activeValue = optimisticValue ?? serverMyVote
+
+  // Clear optimistic state once server data arrives with our vote
+  useEffect(() => {
+    if (optimisticValue && serverMyVote === optimisticValue) {
+      setOptimisticValue(null)
+    }
+  }, [serverMyVote, optimisticValue])
+
+  // Fetch summary when round is revealed
+  useEffect(() => {
+    if (currentRound?.status === 'REVEALED') {
+      fetch(`/api/sessions/${session.id}/summary`)
+        .then((r) => r.ok ? r.json() : null)
+        .then((data) => {
+          if (data?.rounds) {
+            const match = data.rounds.find((r: RoundSummaryDto) => r.roundId === currentRound.id)
+            setRoundSummary(match ?? null)
+          }
+        })
+        .catch(() => setRoundSummary(null))
+    } else {
+      setRoundSummary(null)
+    }
+  }, [session.id, currentRound?.id, currentRound?.status])
 
   if (!currentRound) {
     return (
@@ -24,18 +59,23 @@ export function VotingArea({ session, participantId, onVote }: Props) {
     )
   }
 
-  const hasVoted = currentRound.votes.some((v) => v.participantId === participantId)
+  const hasVoted = activeValue !== null
 
   const handleVote = async (value: string) => {
-    setSelectedValue(value)
+    const wasAlreadyVoted = activeValue !== null
+    setOptimisticValue(value)
     setIsSubmitting(true)
+    setJustChanged(false)
     try {
       const res = await fetch(`/api/sessions/${session.id}/rounds/${currentRound.id}/votes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ participantId, value }),
       })
-      if (res.ok) onVote()
+      if (res.ok) {
+        if (wasAlreadyVoted) setJustChanged(true)
+        onVote()
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -47,7 +87,6 @@ export function VotingArea({ session, participantId, onVote }: Props) {
 
     if (isConsensus) {
       const unanimousValue = voteValues[0]
-      console.log('Consensus achieved on value:', unanimousValue);
       return (
         <div className="lotr-card-ornate consensus-glow">
           <h3 className="mb-6 font-subheading text-lg font-semibold text-elvish text-center">{currentRound.topic}</h3>
@@ -89,6 +128,14 @@ export function VotingArea({ session, participantId, onVote }: Props) {
                 )
               })}
             </div>
+
+            {/* Stats banner + distribution chart */}
+            {roundSummary && (
+              <div className="w-full">
+                <RoundStatsBanner round={roundSummary} />
+                <VoteDistributionChart round={roundSummary} />
+              </div>
+            )}
           </div>
         </div>
       )
@@ -116,6 +163,14 @@ export function VotingArea({ session, participantId, onVote }: Props) {
             )
           })}
         </div>
+
+        {/* Stats banner + distribution chart */}
+        {roundSummary && (
+          <>
+            <RoundStatsBanner round={roundSummary} />
+            <VoteDistributionChart round={roundSummary} />
+          </>
+        )}
       </div>
     )
   }
@@ -123,18 +178,29 @@ export function VotingArea({ session, participantId, onVote }: Props) {
   return (
     <div className="lotr-card">
       <h3 className="mb-2 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
-      <p className="mb-4 text-sm text-muted-foreground italic">
-        {hasVoted ? 'Scroll cast! You may change your counsel.' : 'Cast your scroll, fellow member:'}
-      </p>
+      <div className="mb-4 flex items-center gap-2">
+        <p className="text-sm text-muted-foreground italic">
+          {!hasVoted
+            ? 'Cast your scroll, fellow member:'
+            : justChanged
+              ? '✦ Scroll changed!'
+              : 'Scroll cast! Tap another to change your counsel.'}
+        </p>
+        {hasVoted && activeValue && (
+          <span className="rounded bg-elvish/10 px-1.5 py-0.5 font-subheading text-xs font-semibold text-elvish">
+            {activeValue}
+          </span>
+        )}
+      </div>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
         {session.scale.values.map((sv) => (
           <button
             key={sv.label}
             onClick={() => handleVote(sv.label)}
             disabled={isSubmitting}
-            className={`vote-card shimmer-hover ${selectedValue === sv.label || (hasVoted && currentRound.votes.find(v => v.participantId === participantId)?.value === null && selectedValue === sv.label)
-              ? 'vote-card-selected'
-              : 'border-border text-foreground hover:border-elvish'
+            className={`vote-card shimmer-hover ${activeValue === sv.label
+                ? 'vote-card-selected'
+                : 'border-border text-foreground hover:border-elvish'
               } disabled:opacity-50`}
           >
             {sv.label}

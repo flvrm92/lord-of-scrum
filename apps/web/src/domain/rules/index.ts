@@ -81,3 +81,60 @@ export function detectDivergence(
     max: maxLabel,
   }
 }
+
+// ---------- Round Statistics ----------
+
+export interface RoundStatistics {
+  average: number | null
+  median: number | null
+  mode: string | null
+  voteCount: number
+  distribution: Map<string, number>
+  divergence: DivergenceResult
+}
+
+export function computeRoundStatistics(
+  votes: { value: string }[],
+  scaleValues: ScaleValue[],
+): RoundStatistics {
+  const nonNullVotes = votes.filter((v) => v.value != null)
+  const voteCount = nonNullVotes.length
+
+  // Distribution: label → count
+  const distribution = new Map<string, number>()
+  for (const v of nonNullVotes) {
+    distribution.set(v.value, (distribution.get(v.value) ?? 0) + 1)
+  }
+
+  // Mode: most common label (first alphabetically on tie)
+  let mode: string | null = null
+  if (distribution.size > 0) {
+    let maxCount = 0
+    const sorted = [...distribution.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+    for (const [label, count] of sorted) {
+      if (count > maxCount) {
+        maxCount = count
+        mode = label
+      }
+    }
+  }
+
+  // Numeric stats (only for votes that have a numericValue on their scale entry)
+  const numericValues = nonNullVotes
+    .map((v) => scaleValues.find((s) => s.label === v.value)?.numericValue ?? null)
+    .filter((n): n is number => n !== null)
+
+  let average: number | null = null
+  let median: number | null = null
+
+  if (numericValues.length > 0) {
+    average = Math.round((numericValues.reduce((a, b) => a + b, 0) / numericValues.length) * 10) / 10
+    const sorted = [...numericValues].sort((a, b) => a - b)
+    const mid = Math.floor(sorted.length / 2)
+    median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+  }
+
+  const divergence = detectDivergence(nonNullVotes, scaleValues)
+
+  return { average, median, mode, voteCount, distribution, divergence }
+}

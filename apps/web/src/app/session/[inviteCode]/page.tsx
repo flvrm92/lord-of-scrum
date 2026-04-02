@@ -25,12 +25,14 @@ export default function SessionPage({ params }: Props) {
 
     async function init() {
       try {
+        // Pass stored participantId (if any) so the server reveals our own vote during VOTING
+        const storedAll = Object.keys(localStorage)
+          .filter((k) => k.startsWith('participant:'))
+        // We don't know the sessionId yet — fetch without participantId first, then re-fetch with it
         const res = await fetch(`/api/sessions/by-invite/${encodeURIComponent(inviteCode)}`)
         if (!res.ok) throw new Error('Session not found')
         const data: SessionDto = await res.json()
         if (cancelled) return
-
-        setSessionData(data)
 
         // Find stored participant for this specific session
         const stored = localStorage.getItem(`participant:${data.id}`)
@@ -39,9 +41,15 @@ export default function SessionPage({ params }: Props) {
           const current = data.participants.find((pp) => pp.id === p.id)
           if (current) {
             setParticipant(current)
+            // Re-fetch with participantId so own vote is visible
+            const res2 = await fetch(`/api/sessions/by-invite/${encodeURIComponent(inviteCode)}?participantId=${encodeURIComponent(p.id)}`)
+            if (!res2.ok || cancelled) { setSessionData(data); return }
+            const data2: SessionDto = await res2.json()
+            if (!cancelled) setSessionData(data2)
             return
           }
         }
+        setSessionData(data)
         setFetchError('You have not joined this council.')
       } catch (err: unknown) {
         if (!cancelled) {
@@ -56,12 +64,16 @@ export default function SessionPage({ params }: Props) {
 
   const fetchSession = useCallback(async (sessionId: string) => {
     try {
-      const res = await fetch(`/api/sessions/${encodeURIComponent(sessionId)}`)
+      const storedP = localStorage.getItem(`participant:${sessionId}`)
+      const pid = storedP ? (JSON.parse(storedP) as ParticipantDto).id : null
+      const url = pid
+        ? `/api/sessions/${encodeURIComponent(sessionId)}?participantId=${encodeURIComponent(pid)}`
+        : `/api/sessions/${encodeURIComponent(sessionId)}`
+      const res = await fetch(url)
       if (!res.ok) throw new Error('Session not found')
       const data = await res.json()
       setSessionData(data)
       // Update participant from session data
-      const storedP = localStorage.getItem(`participant:${sessionId}`)
       if (storedP) {
         const p = JSON.parse(storedP)
         const current = data.participants.find((pp: ParticipantDto) => pp.id === p.id)
