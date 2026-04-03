@@ -7,10 +7,11 @@ interface Props {
   sessionId: string
   participantId: string
   currentRound: RoundDto | null
+  inviteCode: string
   onAction: () => void
 }
 
-export function RoundControls({ sessionId, participantId, currentRound, onAction }: Props) {
+export function RoundControls({ sessionId, participantId, currentRound, inviteCode, onAction }: Props) {
   const [topic, setTopic] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -69,23 +70,31 @@ export function RoundControls({ sessionId, participantId, currentRound, onAction
       </h3>
 
       {(!currentRound || currentRound.status === 'REVEALED') && (
-        <form onSubmit={handleStartRound} className="flex gap-2">
-          <input
-            type="text"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="A quest to estimate..."
-            maxLength={200}
-            className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !topic.trim()}
-            className="rounded-md bg-elvish px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-elvish/90 hover:shadow-[0_0_8px_rgba(74,139,158,0.3)] disabled:opacity-50"
+        <div className="flex flex-col gap-2">
+          <form onSubmit={handleStartRound} className="flex gap-2">
+            <input
+              type="text"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="A quest to estimate..."
+              maxLength={200}
+              className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !topic.trim()}
+              className="rounded-md bg-elvish px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-elvish/90 hover:shadow-[0_0_8px_rgba(74,139,158,0.3)] disabled:opacity-50"
+            >
+              Begin the Council
+            </button>
+          </form>
+          <a
+            href={`/session/${inviteCode}/results`}
+            className="self-start font-subheading text-xs text-gold/70 underline transition-colors hover:text-gold"
           >
-            Begin the Council
-          </button>
-        </form>
+            View Chronicles
+          </a>
+        </div>
       )}
 
       {currentRound?.status === 'VOTING' && (

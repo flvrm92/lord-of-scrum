@@ -155,6 +155,7 @@ export default function SessionPage({ params }: Props) {
               sessionId={sessionData.id}
               participantId={participant.id}
               currentRound={sessionData.currentRound}
+              inviteCode={inviteCode}
               onAction={() => fetchSession(sessionData.id)}
             />
           )}
