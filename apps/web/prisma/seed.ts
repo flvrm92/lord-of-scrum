@@ -67,7 +67,29 @@ async function main() {
     },
   })
 
-  console.log('Seeded scales:', { fibonacci: fibonacci.id, tshirt: tshirt.id, powers: powers.id })
+  const sequencial = await prisma.estimationScale.upsert({
+    where: { id: 'default-sequencial' },
+    update: {},
+    create: {
+      id: 'default-sequencial',
+      name: 'Sequencial',
+      isDefault: true,
+      values: {
+        create: [
+          { label: '1', numericValue: 1, sortOrder: 0 },
+          { label: '2', numericValue: 2, sortOrder: 1 },
+          { label: '3', numericValue: 3, sortOrder: 2 },
+          { label: '4', numericValue: 4, sortOrder: 3 },
+          { label: '5', numericValue: 5, sortOrder: 4 },
+          { label: '6', numericValue: 6, sortOrder: 5 },
+          { label: '7', numericValue: 7, sortOrder: 6 },
+          { label: '8', numericValue: 8, sortOrder: 7 },
+        ],
+      },
+    },
+  })
+
+  console.log('Seeded scales:', { fibonacci: fibonacci.id, tshirt: tshirt.id, powers: powers.id, sequencial: sequencial.id })
 }
 
 main()
