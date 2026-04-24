@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import Ably from 'ably'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const key = process.env.ABLY_API_KEY
@@ -15,7 +17,9 @@ export async function GET() {
       capability: { 'session:*': ['subscribe'] },
       ttl: 3600000,
     })
-    return NextResponse.json(tokenRequest)
+    return NextResponse.json(tokenRequest, {
+      headers: { 'Cache-Control': 'no-store' },
+    })
   } catch (error) {
     console.error('Ably auth error:', error)
     return NextResponse.json(
