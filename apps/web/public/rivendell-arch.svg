@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+  <!-- Outer arch -->
+  <path d="M20 260 L20 110 Q20 30, 100 30 Q180 30, 180 110 L180 260" stroke="#4a8b9e" stroke-width="3" opacity="0.9"/>
+  <!-- Inner arch -->
+  <path d="M38 260 L38 116 Q38 48, 100 48 Q162 48, 162 116 L162 260" stroke="#4a8b9e" stroke-width="1.6" opacity="0.6"/>
+  <!-- Keystone leaf -->
+  <path d="M100 30 Q88 14, 100 2 Q112 14, 100 30Z" stroke="#c0c5ce" stroke-width="1.6"/>
+  <path d="M100 4 L100 28" stroke="#c0c5ce" stroke-width="0.8" opacity="0.7"/>
+  <!-- Filigree scrolls under the crown -->
+  <path d="M58 96 Q78 74, 100 74 Q122 74, 142 96" stroke="#c0c5ce" stroke-width="1.2" opacity="0.55"/>
+  <path d="M70 118 Q85 102, 100 102 Q115 102, 130 118" stroke="#c0c5ce" stroke-width="1" opacity="0.4"/>
+  <!-- Vine curls off the columns -->
+  <path d="M20 150 Q6 162, 12 178 Q18 190, 30 184" stroke="#4a8b9e" stroke-width="1.2" opacity="0.5"/>
+  <path d="M180 150 Q194 162, 188 178 Q182 190, 170 184" stroke="#4a8b9e" stroke-width="1.2" opacity="0.5"/>
+  <!-- Column bands -->
+  <path d="M14 200 L44 200" stroke="#4a8b9e" stroke-width="1.6" opacity="0.6"/>
+  <path d="M156 200 L186 200" stroke="#4a8b9e" stroke-width="1.6" opacity="0.6"/>
+  <path d="M14 236 L44 236" stroke="#4a8b9e" stroke-width="1.2" opacity="0.45"/>
+  <path d="M156 236 L186 236" stroke="#4a8b9e" stroke-width="1.2" opacity="0.45"/>
+  <!-- Evening stars over the valley -->
+  <circle cx="100" cy="66" r="1.6" fill="#c0c5ce" opacity="0.6"/>
+  <circle cx="72" cy="52" r="1" fill="#c0c5ce" opacity="0.35"/>
+  <circle cx="128" cy="52" r="1" fill="#c0c5ce" opacity="0.35"/>
+</svg>

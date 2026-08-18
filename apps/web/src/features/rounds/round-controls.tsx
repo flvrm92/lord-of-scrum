@@ -65,7 +65,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
   return (
     <div className="rounded-lg border-2 border-gold/20 bg-gradient-to-br from-gold/5 to-transparent p-4">
       <h3 className="mb-3 flex items-center gap-2 font-subheading text-xs font-semibold uppercase tracking-widest text-gold">
-        <img src="/fellowship-shield.svg" alt="" className="h-4 w-4" />
+        <img src="/fellowship-shield.svg" alt="" className="torch-flicker h-4 w-4" />
         Steward&apos;s Commands
       </h3>
 
@@ -102,9 +102,14 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
           <button
             onClick={handleReveal}
             disabled={isLoading}
-            className="flex items-center gap-2 rounded-md bg-gold px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-gold/90 hover:shadow-[0_0_12px_rgba(184,134,11,0.3)] disabled:opacity-50"
+            className="group flex items-center gap-2 rounded-md bg-gold px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-gold/90 hover:shadow-[0_0_12px_rgba(184,134,11,0.3)] disabled:opacity-50"
           >
-            <img src="/eye-of-sauron.svg" alt="" className="h-4 w-6" />
+            {/* The Eye idles half-lidded and opens when the Steward reaches for it */}
+            <img
+              src="/eye-of-sauron.svg"
+              alt=""
+              className="eye-awaken-idle h-4 w-6 origin-center transition-transform duration-300 group-hover:scale-110"
+            />
             The Eye Reveals All
           </button>
           <button

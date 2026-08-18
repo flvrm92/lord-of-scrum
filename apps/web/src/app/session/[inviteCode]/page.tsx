@@ -132,7 +132,7 @@ export default function SessionPage({ params }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex animate-fade-in flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl tracking-wide text-elvish">{sessionData.name}</h1>

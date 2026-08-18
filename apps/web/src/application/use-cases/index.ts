@@ -430,6 +430,7 @@ export async function getSessionSummary(deps: UseCaseDeps, sessionId: string): P
         mode: stats.mode,
         distribution: entries,
         divergence: stats.divergence,
+        consensus: stats.consensus,
       }
     }),
   )

@@ -70,6 +70,159 @@
   }
 }
 
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Keyframes
+ * ─────────────────────────────────────────────────────────────────────────────
+ * These live here rather than in `tailwind.config.ts` on purpose.
+ *
+ * Tailwind only emits a `@keyframes` block when it finds the matching
+ * `animate-*` utility during its content scan of `./src/**\/*.{ts,tsx}`. It does
+ * not scan CSS, so a keyframe consumed by an `animation:` declaration inside
+ * `@layer components` — which is how this app's motion system is built — is
+ * silently dropped from the bundle and the animation never runs.
+ *
+ * `tailwind.config.ts` keeps only the keyframes that are genuinely used as
+ * `animate-*` utilities in JSX.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ─── Existing celebration + surface effects ─── */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ring-reveal {
+  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.12) rotate(6deg); opacity: 1; }
+  80% { transform: scale(0.95) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.3), inset 0 0 12px rgba(255, 215, 0, 0.1); }
+  50% { box-shadow: 0 0 32px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.2); }
+}
+
+@keyframes inscription-reveal {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-celebrate {
+  0% { opacity: 0; transform: scale(0.92); box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
+  50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); }
+  100% { opacity: 1; transform: scale(1); box-shadow: 0 0 12px rgba(255, 215, 0, 0.3); }
+}
+
+/* ─── Sauron / atmosphere ─── */
+
+@keyframes lava-breathe {
+  0%, 100% { opacity: 0.45; transform: scaleX(1) scaleY(1); }
+  50% { opacity: 0.85; transform: scaleX(1.08) scaleY(1.25); }
+}
+
+@keyframes smoke-drift {
+  0% { transform: translateX(-6%) translateY(0); opacity: 0.18; }
+  50% { opacity: 0.34; }
+  100% { transform: translateX(6%) translateY(-3%); opacity: 0.18; }
+}
+
+@keyframes eye-awaken {
+  0% { transform: scaleY(0.05); opacity: 0; }
+  40% { transform: scaleY(1.06); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes eye-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.08); }
+}
+
+@keyframes sauron-pulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(139, 0, 0, 0.25); }
+  50% { box-shadow: 0 0 28px rgba(139, 0, 0, 0.55), inset 0 0 18px rgba(139, 0, 0, 0.15); }
+}
+
+/* ─── Rivendell ─── */
+
+/* Afternoon sun moving through the canopy — slow enough to be felt, not watched */
+@keyframes canopy-drift {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1.04); opacity: 0.75; }
+  50% { opacity: 1; }
+  100% { transform: translate3d(2%, 1%, 0) scale(1.08); opacity: 0.8; }
+}
+
+/* The falls: the highlights slide exactly one repeat, so the water never lands */
+@keyframes falls-cascade {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 0 0, 0 0, 0 320px; }
+}
+
+@keyframes mist-drift {
+  0% { transform: translateX(-4%) scaleY(1); opacity: 0.5; }
+  50% { opacity: 0.9; }
+  100% { transform: translateX(4%) scaleY(1.15); opacity: 0.55; }
+}
+
+/*
+ * A running animation's value beats the element's own `opacity` declaration, so
+ * this cannot use literal opacities — it would drag every element it touches up
+ * to full strength. Callers set `--glimmer-peak` to the opacity they actually
+ * want and keep a matching static `opacity` for the reduced-motion case.
+ */
+@keyframes slow-glimmer {
+  0%, 100% { opacity: calc(var(--glimmer-peak, 0.08) * 0.7); }
+  50% { opacity: var(--glimmer-peak, 0.08); }
+}
+
+/* Uneven stops so it reads as firelight rather than a sine wave */
+@keyframes torch-flicker {
+  0% { opacity: 1; }
+  7% { opacity: 0.72; }
+  11% { opacity: 0.95; }
+  19% { opacity: 0.64; }
+  23% { opacity: 1; }
+  41% { opacity: 0.82; }
+  47% { opacity: 1; }
+  58% { opacity: 0.7; }
+  63% { opacity: 0.92; }
+  79% { opacity: 1; }
+  86% { opacity: 0.76; }
+  100% { opacity: 1; }
+}
+
+@keyframes card-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-7px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(3px); }
+  80% { transform: translateX(-1px); }
+}
+
+/* ─── Vote feedback ─── */
+
+@keyframes wax-press {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.94); }
+  70% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes wax-stamp {
+  0% { transform: scale(0.2); opacity: 0.75; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes scroll-cast {
+  0% { opacity: 0; transform: translateX(8px); }
+  60% { opacity: 1; transform: translateX(-2px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
 @layer components {
   .lotr-card {
     @apply rounded-lg border bg-card p-6;
@@ -205,5 +358,240 @@
     @apply text-sm italic;
     color: hsl(var(--muted-foreground));
     animation: inscription-reveal 0.6s ease-out 1.3s both;
+  }
+
+  /* ─── Card flip: face-down card-back → face-up value ─── */
+
+  .flip-card {
+    perspective: 900px;
+  }
+
+  .flip-card-inner {
+    @apply relative h-full w-full;
+    transform-style: preserve-3d;
+    transform: rotateY(180deg);
+    transition: transform 0.7s cubic-bezier(0.34, 1.32, 0.64, 1);
+  }
+
+  .flip-card-inner[data-flipped='true'] {
+    transform: rotateY(0deg);
+  }
+
+  .flip-card-face {
+    @apply absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-lg;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .flip-card-front {
+    @apply border-2 border-gold/30 bg-background p-3;
+    transform: rotateY(0deg);
+  }
+
+  .flip-card-back {
+    @apply overflow-hidden border-2 border-gold/40;
+    background: linear-gradient(150deg, #1a1007 0%, #3d2814 100%);
+    transform: rotateY(180deg);
+  }
+
+  /* ─── The Eye of Sauron: divergence ─── */
+
+  .sauron-watch {
+    position: relative;
+    border-color: rgba(139, 0, 0, 0.45) !important;
+    animation:
+      card-shake 0.45s ease-in-out both,
+      sauron-pulse 3.2s ease-in-out 0.45s infinite;
+  }
+
+  .sauron-eye {
+    @apply pointer-events-none absolute left-1/2 top-6 w-[70%] max-w-[22rem] -translate-x-1/2 select-none;
+    opacity: 0.14;
+    filter: drop-shadow(0 0 18px rgba(255, 69, 0, 0.5));
+    animation:
+      eye-awaken 0.8s cubic-bezier(0.34, 1.4, 0.64, 1) both,
+      eye-blink 6s ease-in-out 0.8s infinite;
+  }
+
+  .dark .sauron-eye {
+    opacity: 0.22;
+  }
+
+  .eye-awaken-idle {
+    animation: eye-blink 6s ease-in-out infinite;
+  }
+
+  /* ─── Atmosphere ─── */
+
+  .torch-flicker {
+    animation: torch-flicker 4s ease-in-out infinite;
+  }
+
+  .ambient-layer {
+    @apply pointer-events-none fixed inset-0 -z-10;
+  }
+
+  .ambient-vignette {
+    @apply pointer-events-none absolute inset-0;
+    background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(120, 85, 30, 0.09) 100%);
+    animation: smoke-drift 26s ease-in-out infinite alternate;
+  }
+
+  /*
+   * ── Mordor (dark) ──
+   * Ash, the glow of Orodruin below the horizon, and Barad-dûr at the margin.
+   * Every layer here sits inside `.ambient-layer`, so it is fixed, behind the
+   * content and pointer-transparent by inheritance.
+   */
+
+  .ambient-breath {
+    @apply pointer-events-none absolute inset-0;
+    background: radial-gradient(ellipse at 50% 85%, rgba(139, 0, 0, 0.1) 0%, transparent 60%);
+    animation: lava-breathe 12s ease-in-out infinite;
+  }
+
+  .mordor-horizon {
+    @apply pointer-events-none absolute inset-x-0 bottom-0;
+    height: 34vh;
+    transform-origin: 50% 100%;
+    background:
+      radial-gradient(ellipse at 50% 108%, rgba(255, 69, 0, 0.16) 0%, rgba(139, 0, 0, 0.09) 38%, transparent 68%);
+    animation: lava-breathe 16s ease-in-out infinite;
+  }
+
+  .mordor-ash {
+    @apply pointer-events-none absolute inset-x-[-8%] bottom-0;
+    height: 55vh;
+    background:
+      linear-gradient(178deg, transparent 0%, rgba(26, 16, 7, 0.5) 45%, transparent 62%),
+      linear-gradient(183deg, transparent 30%, rgba(13, 13, 13, 0.45) 72%, transparent 88%);
+    filter: blur(10px);
+    animation: smoke-drift 22s ease-in-out infinite alternate;
+  }
+
+  .mordor-tower {
+    @apply pointer-events-none absolute bottom-0 left-[2%] select-none;
+    height: min(46vh, 22rem);
+    --glimmer-peak: 0.5;
+    opacity: 0.5;
+    filter: drop-shadow(0 0 24px rgba(255, 69, 0, 0.35));
+    animation: slow-glimmer 14s ease-in-out infinite;
+  }
+
+  /*
+   * ── Rivendell (light) ──
+   * Dappled canopy light, the falls of Imladris down one edge, valley mist and
+   * an elven arch. Kept under ~0.1 alpha throughout: parchment has little
+   * contrast headroom and the cards must stay the brightest thing on screen.
+   */
+
+  .rivendell-canopy {
+    @apply pointer-events-none absolute inset-0;
+    background:
+      radial-gradient(ellipse at 18% 12%, rgba(212, 168, 67, 0.13) 0%, transparent 46%),
+      radial-gradient(ellipse at 76% 8%, rgba(184, 134, 11, 0.09) 0%, transparent 42%),
+      radial-gradient(ellipse at 62% 58%, rgba(95, 154, 110, 0.1) 0%, transparent 52%),
+      radial-gradient(ellipse at 8% 72%, rgba(74, 139, 158, 0.07) 0%, transparent 48%);
+    animation: canopy-drift 28s ease-in-out infinite alternate;
+  }
+
+  .rivendell-falls {
+    @apply pointer-events-none absolute right-0 top-0 bottom-0;
+    width: clamp(5rem, 12vw, 11rem);
+    /*
+     * Three layers: a soft falloff at both edges, static vertical columns of
+     * water, and long highlights that slide down them. Only the third layer
+     * repeats vertically, so `falls-cascade` moves the highlights and leaves
+     * the columns standing — which is what makes it read as falling rather
+     * than as a striped band.
+     */
+    background:
+      linear-gradient(90deg, transparent 0%, rgba(127, 184, 201, 0.16) 42%, rgba(192, 197, 206, 0.1) 78%, transparent 100%),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.5) 0px,
+        rgba(127, 184, 201, 0.16) 5px,
+        transparent 12px,
+        rgba(192, 197, 206, 0.3) 20px,
+        transparent 29px
+      ),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        rgba(255, 255, 255, 0.4) 60px,
+        transparent 150px,
+        rgba(255, 255, 255, 0.24) 240px,
+        transparent 320px
+      );
+    background-size: 100% 100%, 100% 100%, 100% 320px;
+    filter: blur(4px);
+    animation: falls-cascade 7s linear infinite;
+  }
+
+  .rivendell-mist {
+    @apply pointer-events-none absolute inset-x-[-6%] bottom-0;
+    height: 30vh;
+    transform-origin: 50% 100%;
+    background: linear-gradient(0deg, rgba(245, 230, 200, 0.55) 0%, rgba(192, 197, 206, 0.16) 45%, transparent 80%);
+    filter: blur(8px);
+    animation: mist-drift 34s ease-in-out infinite alternate;
+  }
+
+  .rivendell-arch {
+    @apply pointer-events-none absolute bottom-0 right-[3%] select-none;
+    height: min(42vh, 20rem);
+    --glimmer-peak: 0.16;
+    opacity: 0.16;
+    animation: slow-glimmer 18s ease-in-out infinite;
+  }
+
+  /* ─── Vote feedback ─── */
+
+  .wax-seal {
+    animation: wax-press 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .wax-seal::before {
+    content: '';
+    @apply pointer-events-none absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.55) 0%, rgba(184, 134, 11, 0.25) 55%, transparent 72%);
+    animation: wax-stamp 0.55s ease-out both;
+  }
+
+  .vote-progress {
+    @apply h-1 w-full overflow-hidden rounded-full;
+    background: hsl(var(--muted));
+  }
+
+  .vote-progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+    background: linear-gradient(90deg, #b8860b 0%, #ffd700 100%);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  }
+
+  .scroll-cast-in {
+    animation: scroll-cast 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/*
+ * Accessibility: honour the OS "reduce motion" setting everywhere.
+ * Components additionally use `useReducedMotion()` to skip mounting the ember
+ * canvas loop entirely — this block is the safety net for the purely
+ * declarative effects.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .flip-card-inner {
+    transform: rotateY(0deg) !important;
   }
 }

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 320" fill="none">
+  <!-- Tower mass -->
+  <path d="M40 320 L46 190 L56 120 L64 60 L80 20 L96 60 L104 120 L114 190 L120 320Z" fill="#0d0d0d" opacity="0.95"/>
+  <!-- Buttresses -->
+  <path d="M40 320 L26 300 L30 214 L46 196" fill="#0d0d0d" opacity="0.8"/>
+  <path d="M120 320 L134 300 L130 214 L114 196" fill="#0d0d0d" opacity="0.8"/>
+  <!-- Spires flanking the crown -->
+  <path d="M56 120 L50 78 L60 100Z" fill="#0d0d0d" opacity="0.9"/>
+  <path d="M104 120 L110 78 L100 100Z" fill="#0d0d0d" opacity="0.9"/>
+  <!-- Crown horns -->
+  <path d="M80 20 L68 2 L74 26" fill="#0d0d0d" opacity="0.9"/>
+  <path d="M80 20 L92 2 L86 26" fill="#0d0d0d" opacity="0.9"/>
+  <!-- The Eye at the summit -->
+  <ellipse cx="80" cy="40" rx="13" ry="7" fill="#8b0000" opacity="0.85"/>
+  <ellipse cx="80" cy="40" rx="8" ry="4.5" fill="#ff4500" opacity="0.9"/>
+  <ellipse cx="80" cy="40" rx="1.8" ry="4" fill="#0d0d0d"/>
+  <!-- Fires along the flanks -->
+  <path d="M56 150 L60 150" stroke="#ff4500" stroke-width="2" opacity="0.5"/>
+  <path d="M100 168 L104 168" stroke="#ff4500" stroke-width="2" opacity="0.4"/>
+  <path d="M52 232 L58 232" stroke="#8b0000" stroke-width="2" opacity="0.45"/>
+  <path d="M104 250 L110 250" stroke="#8b0000" stroke-width="2" opacity="0.35"/>
+</svg>

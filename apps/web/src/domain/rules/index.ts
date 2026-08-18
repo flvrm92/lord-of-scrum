@@ -82,6 +82,56 @@ export function detectDivergence(
   }
 }
 
+// ---------- Consensus ----------
+
+export interface ConsensusResult {
+  isUnanimous: boolean
+  value: string | null
+  voteCount: number
+  /** False for labels with no numericValue on the scale ('?', '☕'). */
+  isNumeric: boolean
+}
+
+/**
+ * A round reaches consensus when at least two votes were cast and every one of
+ * them carries the same label. A solo round is never a celebration.
+ */
+export function detectConsensus(
+  votes: { value: string | null }[],
+  // Structural, so the transport-layer ScaleValueDto satisfies it too — this
+  // rule runs both on the server and in the session room.
+  scaleValues: Pick<ScaleValue, 'label' | 'numericValue'>[],
+): ConsensusResult {
+  const values = votes
+    .map((v) => v.value)
+    .filter((v): v is string => v != null && v !== '')
+
+  if (values.length < 2 || new Set(values).size !== 1) {
+    return { isUnanimous: false, value: null, voteCount: values.length, isNumeric: false }
+  }
+
+  const value = values[0]
+  const isNumeric = scaleValues.find((s) => s.label === value)?.numericValue != null
+
+  return { isUnanimous: true, value, voteCount: values.length, isNumeric }
+}
+
+/**
+ * True when any vote carries a label the scale gives no numeric value ('?', '☕').
+ * Such a round is incomplete rather than divided — the spread only describes the
+ * members who committed to a number — so the reveal withholds its divergence
+ * theatrics even when `detectDivergence` still reports a wide spread.
+ */
+export function hasAbstention(
+  votes: { value: string | null }[],
+  scaleValues: Pick<ScaleValue, 'label' | 'numericValue'>[],
+): boolean {
+  return votes.some((v) => {
+    if (v.value == null || v.value === '') return false
+    return scaleValues.find((s) => s.label === v.value)?.numericValue == null
+  })
+}
+
 // ---------- Round Statistics ----------
 
 export interface RoundStatistics {
@@ -91,6 +141,7 @@ export interface RoundStatistics {
   voteCount: number
   distribution: Map<string, number>
   divergence: DivergenceResult
+  consensus: ConsensusResult
 }
 
 export function computeRoundStatistics(
@@ -135,6 +186,7 @@ export function computeRoundStatistics(
   }
 
   const divergence = detectDivergence(nonNullVotes, scaleValues)
+  const consensus = detectConsensus(nonNullVotes, scaleValues)
 
-  return { average, median, mode, voteCount, distribution, divergence }
+  return { average, median, mode, voteCount, distribution, divergence, consensus }
 }
