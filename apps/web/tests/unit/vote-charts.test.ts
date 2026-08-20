@@ -129,7 +129,6 @@ function makeDeps(overrides: Partial<UseCaseDeps> = {}): UseCaseDeps {
       findBySessionAndName: vi.fn(),
       create: vi.fn(),
       updateActive: vi.fn(),
-      delete: vi.fn(),
     },
     roundRepo: {
       findById: vi.fn(),
@@ -144,7 +143,7 @@ function makeDeps(overrides: Partial<UseCaseDeps> = {}): UseCaseDeps {
       upsert: vi.fn(),
       deleteByRoundId: vi.fn(),
     },
-    scaleRepo: { findAll: vi.fn(), findById: vi.fn() },
+    scaleRepo: { findAll: vi.fn() },
     eventPublisher: {
       participantJoined: vi.fn(),
       participantLeft: vi.fn(),

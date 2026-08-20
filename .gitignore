@@ -28,6 +28,7 @@ x86/
 # ========================================
 node_modules/
 .next/
+*.tsbuildinfo
 .turbo/
 out/
 .vercel

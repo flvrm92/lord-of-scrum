@@ -51,10 +51,3 @@ export function getRandomLotrTitle(): string {
   const idx = randomValues[0] % LOTR_TITLES.length
   return LOTR_TITLES[idx]
 }
-
-/**
- * Formats a display name with a LOTR title: "Name, Title"
- */
-export function formatDisplayWithTitle(name: string, title: string): string {
-  return `${name}, ${title}`
-}

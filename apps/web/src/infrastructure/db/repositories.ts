@@ -65,10 +65,6 @@ export const participantRepository: ParticipantRepository = {
   async updateActive(id, isActive) {
     return prisma.participant.update({ where: { id }, data: { isActive } })
   },
-
-  async delete(id) {
-    await prisma.participant.delete({ where: { id } })
-  },
 }
 
 export const roundRepository: RoundRepository = {
@@ -132,13 +128,6 @@ export const scaleRepository: ScaleRepository = {
     return prisma.estimationScale.findMany({
       include: { values: { orderBy: { sortOrder: 'asc' } } },
       orderBy: { name: 'asc' },
-    })
-  },
-
-  async findById(id) {
-    return prisma.estimationScale.findUnique({
-      where: { id },
-      include: { values: { orderBy: { sortOrder: 'asc' } } },
     })
   },
 }

@@ -155,27 +155,10 @@
   100% { transform: translate3d(2%, 1%, 0) scale(1.08); opacity: 0.8; }
 }
 
-/* The falls: the highlights slide exactly one repeat, so the water never lands */
-@keyframes falls-cascade {
-  0% { background-position: 0 0, 0 0, 0 0; }
-  100% { background-position: 0 0, 0 0, 0 320px; }
-}
-
 @keyframes mist-drift {
   0% { transform: translateX(-4%) scaleY(1); opacity: 0.5; }
   50% { opacity: 0.9; }
   100% { transform: translateX(4%) scaleY(1.15); opacity: 0.55; }
-}
-
-/*
- * A running animation's value beats the element's own `opacity` declaration, so
- * this cannot use literal opacities — it would drag every element it touches up
- * to full strength. Callers set `--glimmer-peak` to the opacity they actually
- * want and keep a matching static `opacity` for the reduced-motion case.
- */
-@keyframes slow-glimmer {
-  0%, 100% { opacity: calc(var(--glimmer-peak, 0.08) * 0.7); }
-  50% { opacity: var(--glimmer-peak, 0.08); }
 }
 
 /* Uneven stops so it reads as firelight rather than a sine wave */
@@ -439,7 +422,7 @@
 
   /*
    * ── Mordor (dark) ──
-   * Ash, the glow of Orodruin below the horizon, and Barad-dûr at the margin.
+   * Ash and the glow of Orodruin below the horizon.
    * Every layer here sits inside `.ambient-layer`, so it is fixed, behind the
    * content and pointer-transparent by inheritance.
    */
@@ -469,20 +452,11 @@
     animation: smoke-drift 22s ease-in-out infinite alternate;
   }
 
-  .mordor-tower {
-    @apply pointer-events-none absolute bottom-0 left-[2%] select-none;
-    height: min(46vh, 22rem);
-    --glimmer-peak: 0.5;
-    opacity: 0.5;
-    filter: drop-shadow(0 0 24px rgba(255, 69, 0, 0.35));
-    animation: slow-glimmer 14s ease-in-out infinite;
-  }
-
   /*
    * ── Rivendell (light) ──
-   * Dappled canopy light, the falls of Imladris down one edge, valley mist and
-   * an elven arch. Kept under ~0.1 alpha throughout: parchment has little
-   * contrast headroom and the cards must stay the brightest thing on screen.
+   * Dappled canopy light and valley mist. Kept under ~0.1 alpha throughout:
+   * parchment has little contrast headroom and the cards must stay the
+   * brightest thing on screen.
    */
 
   .rivendell-canopy {
@@ -495,39 +469,6 @@
     animation: canopy-drift 28s ease-in-out infinite alternate;
   }
 
-  .rivendell-falls {
-    @apply pointer-events-none absolute right-0 top-0 bottom-0;
-    width: clamp(5rem, 12vw, 11rem);
-    /*
-     * Three layers: a soft falloff at both edges, static vertical columns of
-     * water, and long highlights that slide down them. Only the third layer
-     * repeats vertically, so `falls-cascade` moves the highlights and leaves
-     * the columns standing — which is what makes it read as falling rather
-     * than as a striped band.
-     */
-    background:
-      linear-gradient(90deg, transparent 0%, rgba(127, 184, 201, 0.16) 42%, rgba(192, 197, 206, 0.1) 78%, transparent 100%),
-      repeating-linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.5) 0px,
-        rgba(127, 184, 201, 0.16) 5px,
-        transparent 12px,
-        rgba(192, 197, 206, 0.3) 20px,
-        transparent 29px
-      ),
-      repeating-linear-gradient(
-        180deg,
-        transparent 0px,
-        rgba(255, 255, 255, 0.4) 60px,
-        transparent 150px,
-        rgba(255, 255, 255, 0.24) 240px,
-        transparent 320px
-      );
-    background-size: 100% 100%, 100% 100%, 100% 320px;
-    filter: blur(4px);
-    animation: falls-cascade 7s linear infinite;
-  }
-
   .rivendell-mist {
     @apply pointer-events-none absolute inset-x-[-6%] bottom-0;
     height: 30vh;
@@ -535,14 +476,6 @@
     background: linear-gradient(0deg, rgba(245, 230, 200, 0.55) 0%, rgba(192, 197, 206, 0.16) 45%, transparent 80%);
     filter: blur(8px);
     animation: mist-drift 34s ease-in-out infinite alternate;
-  }
-
-  .rivendell-arch {
-    @apply pointer-events-none absolute bottom-0 right-[3%] select-none;
-    height: min(42vh, 20rem);
-    --glimmer-peak: 0.16;
-    opacity: 0.16;
-    animation: slow-glimmer 18s ease-in-out infinite;
   }
 
   /* ─── Vote feedback ─── */

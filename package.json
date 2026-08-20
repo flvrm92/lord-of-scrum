@@ -8,7 +8,6 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
-    "test:e2e": "turbo test:e2e",
     "db:migrate": "turbo db:migrate",
     "db:seed": "turbo db:seed",
     "db:studio": "turbo db:studio"

@@ -6,7 +6,6 @@ import {
   assertRoundVoting,
   detectDivergence,
   getRandomLotrTitle,
-  formatDisplayWithTitle,
   LOTR_TITLES,
 } from '@/domain/rules'
 import { InvalidDisplayNameError, InvalidVoteValueError, RoundNotVotingError } from '@/domain/errors'
@@ -130,20 +129,5 @@ describe('getRandomLotrTitle', () => {
     for (let i = 0; i < 50; i++) {
       expect(getRandomLotrTitle().length).toBeGreaterThan(0)
     }
-  })
-})
-
-describe('formatDisplayWithTitle', () => {
-  it('formats name and title with a comma', () => {
-    expect(formatDisplayWithTitle('Gandalf', 'Grey Pilgrim')).toBe('Gandalf, Grey Pilgrim')
-  })
-
-  it('handles names with spaces', () => {
-    expect(formatDisplayWithTitle('Frodo Baggins', 'Ringbearer')).toBe('Frodo Baggins, Ringbearer')
-  })
-
-  it('returns the exact format "Name, Title"', () => {
-    const result = formatDisplayWithTitle('Aragorn', 'King of Gondor')
-    expect(result).toMatch(/^.+, .+$/)
   })
 })
