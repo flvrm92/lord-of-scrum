@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import { getAblyClient } from '@/lib/ably-client'
 import type { SessionDto, ParticipantDto } from '@/application/dtos'
 import { VotingArea } from '@/features/voting/voting-area'
@@ -14,7 +13,6 @@ interface Props {
 
 export default function SessionPage({ params }: Props) {
   const { inviteCode } = params
-  const queryClient = useQueryClient()
   const [participant, setParticipant] = useState<ParticipantDto | null>(null)
   const [sessionData, setSessionData] = useState<SessionDto | null>(null)
   const [fetchError, setFetchError] = useState('')
@@ -26,8 +24,6 @@ export default function SessionPage({ params }: Props) {
     async function init() {
       try {
         // Pass stored participantId (if any) so the server reveals our own vote during VOTING
-        const storedAll = Object.keys(localStorage)
-          .filter((k) => k.startsWith('participant:'))
         // We don't know the sessionId yet — fetch without participantId first, then re-fetch with it
         const res = await fetch(`/api/sessions/by-invite/${encodeURIComponent(inviteCode)}`)
         if (!res.ok) throw new Error('Session not found')
@@ -132,7 +128,7 @@ export default function SessionPage({ params }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex animate-fade-in flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl tracking-wide text-elvish">{sessionData.name}</h1>

@@ -26,7 +26,6 @@ export interface ParticipantRepository {
     displayName: string
   }): Promise<Participant>
   updateActive(id: string, isActive: boolean): Promise<Participant>
-  delete(id: string): Promise<void>
 }
 
 export interface RoundRepository {
@@ -46,7 +45,6 @@ export interface VoteRepository {
 
 export interface ScaleRepository {
   findAll(): Promise<(EstimationScale & { values: ScaleValue[] })[]>
-  findById(id: string): Promise<(EstimationScale & { values: ScaleValue[] }) | null>
 }
 
 export interface UserRepository {

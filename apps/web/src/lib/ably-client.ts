@@ -11,10 +11,3 @@ export function getAblyClient(): Ably.Realtime {
   }
   return ablyClient
 }
-
-export function closeAblyClient(): void {
-  if (ablyClient) {
-    ablyClient.close()
-    ablyClient = null
-  }
-}

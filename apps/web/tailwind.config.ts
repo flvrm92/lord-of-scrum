@@ -68,11 +68,16 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      /*
+       * Only the keyframes consumed as `animate-*` utilities in JSX belong here.
+       * Tailwind emits an `@keyframes` block only when it finds the matching
+       * utility during its content scan of ./src, and it does not scan CSS — so
+       * keyframes driven by component classes (`.lotr-*`, `.consensus-*`,
+       * `.rivendell-*`, `.mordor-*`) are declared directly in
+       * src/styles/globals.css instead. Declaring them here would silently drop
+       * them from the bundle.
+       */
       keyframes: {
-        'card-flip': {
-          '0%': { transform: 'rotateY(0deg)' },
-          '100%': { transform: 'rotateY(180deg)' },
-        },
         'fade-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
@@ -81,47 +86,17 @@ const config: Config = {
           '0%, 100%': { filter: 'drop-shadow(0 0 4px #b8860b)' },
           '50%': { filter: 'drop-shadow(0 0 16px #ffd700)' },
         },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
         'gold-sparkle': {
           '0%, 100%': { textShadow: '0 0 4px rgba(184, 134, 11, 0.4)' },
           '50%': { textShadow: '0 0 12px rgba(255, 215, 0, 0.8)' },
         },
-        'ring-reveal': {
-          '0%': { transform: 'scale(0) rotate(-30deg)', opacity: '0' },
-          '60%': { transform: 'scale(1.12) rotate(6deg)', opacity: '1' },
-          '80%': { transform: 'scale(0.95) rotate(-2deg)' },
-          '100%': { transform: 'scale(1) rotate(0deg)' },
-        },
-        'glow-pulse': {
-          '0%, 100%': { boxShadow: '0 0 12px rgba(255, 215, 0, 0.3), inset 0 0 12px rgba(255, 215, 0, 0.1)' },
-          '50%': { boxShadow: '0 0 32px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.2)' },
-        },
-        'inscription-reveal': {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        'card-celebrate': {
-          '0%': { opacity: '0', transform: 'scale(0.92)', boxShadow: '0 0 0 rgba(255, 215, 0, 0)' },
-          '50%': { opacity: '1', transform: 'scale(1.02)', boxShadow: '0 0 40px rgba(255, 215, 0, 0.5)' },
-          '100%': { opacity: '1', transform: 'scale(1)', boxShadow: '0 0 12px rgba(255, 215, 0, 0.3)' },
-        },
       },
       animation: {
-        'card-flip': 'card-flip 0.6s ease-in-out',
         'fade-in': 'fade-in 0.3s ease-in-out',
         'ring-glow': 'ring-glow 3s ease-in-out infinite',
-        shimmer: 'shimmer 2s ease-in-out infinite',
         'gold-sparkle': 'gold-sparkle 2.5s ease-in-out infinite',
-        'ring-reveal': 'ring-reveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-        'glow-pulse': 'glow-pulse 2.5s ease-in-out infinite',
-        'inscription-reveal': 'inscription-reveal 0.6s ease-out forwards',
-        'card-celebrate': 'card-celebrate 0.7s cubic-bezier(0.22, 1, 0.36, 1) both',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
 }
 export default config

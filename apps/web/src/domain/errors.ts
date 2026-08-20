@@ -14,12 +14,6 @@ export class RoundNotVotingError extends DomainError {
   }
 }
 
-export class DuplicateVoteError extends DomainError {
-  constructor() {
-    super('Participant already voted in this round', 'DUPLICATE_VOTE')
-  }
-}
-
 export class DuplicateDisplayNameError extends DomainError {
   constructor(name: string) {
     super(`Display name "${name}" is already taken in this session`, 'DUPLICATE_DISPLAY_NAME')

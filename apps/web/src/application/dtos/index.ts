@@ -120,6 +120,12 @@ export interface RoundSummaryDto {
     min: string | null
     max: string | null
   }
+  consensus: {
+    isUnanimous: boolean
+    value: string | null
+    voteCount: number
+    isNumeric: boolean
+  }
 }
 
 export interface SessionSummaryDto {

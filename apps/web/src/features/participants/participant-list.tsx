@@ -53,7 +53,7 @@ export function ParticipantList({ participants, currentRound, currentParticipant
           return (
             <div
               key={p.id}
-              className={`flex items-center justify-between rounded-md px-3 py-2 transition-colors ${isMe ? 'bg-elvish/5 ring-1 ring-elvish/20' : 'bg-background'}`}
+              className={`flex items-center justify-between rounded-md px-3 py-2 transition-all duration-500 ${isMe ? 'bg-elvish/5 ring-1 ring-elvish/20' : 'bg-background'} ${hasVoted ? 'shadow-[0_0_10px_-2px_rgba(184,134,11,0.35)]' : ''}`}
             >
               <div className="flex items-center gap-2">
                 <div className={`h-2 w-2 rounded-full ${p.isActive ? 'bg-shire' : 'bg-muted-foreground/30'}`} />
@@ -75,7 +75,12 @@ export function ParticipantList({ participants, currentRound, currentParticipant
               </div>
               <div className="flex items-center gap-2">
                 {currentRound && currentRound.status === 'VOTING' && (
-                  <span className={`text-xs ${hasVoted ? 'text-shire font-medium' : 'text-muted-foreground italic'}`}>
+                  <span
+                    // Keyed on the state so React remounts the span and the
+                    // entrance animation replays the moment a vote lands
+                    key={hasVoted ? 'cast' : 'pondering'}
+                    className={`scroll-cast-in text-xs ${hasVoted ? 'text-shire font-medium' : 'text-muted-foreground italic'}`}
+                  >
                     {hasVoted ? '✓ Scroll cast' : 'Pondering...'}
                   </span>
                 )}

@@ -1,6 +1,5 @@
 import Ably from 'ably'
 import type { SessionEventPublisher } from '@/application/ports'
-import type { Participant, Round, Vote } from '@/domain/entities'
 
 function getAblyClient(): Ably.Rest | null {
   const key = process.env.ABLY_API_KEY

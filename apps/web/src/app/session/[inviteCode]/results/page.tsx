@@ -64,12 +64,9 @@ export default function ResultsPage({ params }: Props) {
     </div>
   )
 
-  // Session-level aggregates
-  const revealedRounds = data.rounds.filter((r) => r.status === 'REVEALED')
-  const roundsWithConsensus = revealedRounds.filter((r) => {
-    const vals = r.votes.map((v) => v.value).filter(Boolean)
-    return vals.length > 1 && new Set(vals).size === 1
-  })
+  // Session-level aggregates — both derived from the server summary, which computes
+  // consensus and divergence with the same domain rules used during a live round.
+  const roundsWithConsensus = summary?.rounds.filter((r) => r.consensus.isUnanimous) ?? []
   const roundsWithDivergence = summary?.rounds.filter((r) => r.divergence.isDiverged) ?? []
 
   return (

@@ -3,6 +3,7 @@ import { Inter, Cinzel, Cinzel_Decorative } from 'next/font/google'
 import { Providers } from './providers'
 import { ThemeToggle } from './theme-toggle'
 import { UserMenu } from './user-menu'
+import { AmbientAtmosphere } from '@/features/effects/ambient-atmosphere'
 import '@/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -31,15 +32,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen font-body antialiased">
         <Providers>
+          <AmbientAtmosphere />
           <header className="border-b border-gold/20 bg-gradient-to-r from-mordor via-mordor-light to-mordor">
             <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
               <a href="/" className="flex items-center gap-3 group">
-                <svg className="h-8 w-8 animate-ring-glow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="50" cy="50" r="38" stroke="#b8860b" strokeWidth="6" />
-                  <circle cx="50" cy="50" r="32" stroke="#ffd700" strokeWidth="1.5" opacity="0.5" />
-                  <circle cx="50" cy="50" r="44" stroke="#b8860b" strokeWidth="1.5" opacity="0.3" />
-                  <path d="M25 50 Q37 44, 50 50 Q63 56, 75 50" stroke="#ffd700" strokeWidth="1.5" fill="none" opacity="0.6" />
-                </svg>
+                {/* Wrapper carries the flicker so it composes with the ring's
+                    own glow instead of the two animations overwriting each other */}
+                <span className="torch-flicker inline-flex">
+                  <svg className="h-8 w-8 animate-ring-glow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="38" stroke="#b8860b" strokeWidth="6" />
+                    <circle cx="50" cy="50" r="32" stroke="#ffd700" strokeWidth="1.5" opacity="0.5" />
+                    <circle cx="50" cy="50" r="44" stroke="#b8860b" strokeWidth="1.5" opacity="0.3" />
+                    <path d="M25 50 Q37 44, 50 50 Q63 56, 75 50" stroke="#ffd700" strokeWidth="1.5" fill="none" opacity="0.6" />
+                  </svg>
+                </span>
                 <span className="font-heading text-xl text-parchment tracking-wide group-hover:text-ring transition-colors">
                   Lord of Scrum
                 </span>
