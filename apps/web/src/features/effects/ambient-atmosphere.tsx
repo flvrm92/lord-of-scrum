@@ -47,15 +47,12 @@ export function AmbientAtmosphere() {
         <>
           <div className="mordor-horizon" />
           <div className="mordor-ash" />
-          <img src="/barad-dur.svg" alt="" className="mordor-tower" />
           <div className="ambient-breath" />
           <ParticleCanvas variant="ember" density={2.2} intensity={0.65} />
         </>
       ) : (
         <>
           <div className="rivendell-canopy" />
-          <div className="rivendell-falls" />
-          <img src="/rivendell-arch.svg" alt="" className="rivendell-arch" />
           <div className="rivendell-mist" />
           <div className="ambient-vignette" />
           <ParticleCanvas variant="leaf" density={2} intensity={0.9} />
