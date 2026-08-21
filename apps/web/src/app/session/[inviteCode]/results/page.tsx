@@ -56,9 +56,9 @@ export default function ResultsPage({ params }: Props) {
     return () => { cancelled = true }
   }, [inviteCode])
 
-  if (error) return <p className="text-destructive py-8 text-center">{error}</p>
+  if (error) return <p data-testid="chronicles-error" className="text-destructive py-8 text-center">{error}</p>
   if (!data) return (
-    <div className="flex flex-col items-center gap-4 py-16">
+    <div data-testid="chronicles-loading" className="flex flex-col items-center gap-4 py-16">
       <img src="/one-ring.svg" alt="" className="h-12 w-12 animate-spin" style={{ animationDuration: '3s' }} />
       <p className="font-subheading text-muted-foreground italic">Consulting the Palantir...</p>
     </div>
@@ -70,35 +70,35 @@ export default function ResultsPage({ params }: Props) {
   const roundsWithDivergence = summary?.rounds.filter((r) => r.divergence.isDiverged) ?? []
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="font-heading text-2xl tracking-wide text-elvish">{data.sessionName} — Chronicles</h1>
+    <div data-testid="chronicles-root" className="flex flex-col gap-6">
+      <h1 data-testid="chronicles-title" className="font-heading text-2xl tracking-wide text-elvish">{data.sessionName} — Chronicles</h1>
 
       {/* Session-level aggregate */}
       {data.rounds.length > 0 && (
         <div className="flex flex-wrap gap-3">
           <div className="rounded-lg border border-gold/20 bg-card px-4 py-3 text-center">
-            <p className="font-heading text-2xl font-bold text-gold">{data.rounds.length}</p>
+            <p data-testid="stat-total-rounds" className="font-heading text-2xl font-bold text-gold">{data.rounds.length}</p>
             <p className="font-subheading text-xs text-muted-foreground">Total Rounds</p>
           </div>
           <div className="rounded-lg border border-gold/20 bg-card px-4 py-3 text-center">
-            <p className="font-heading text-2xl font-bold text-shire">{roundsWithConsensus.length}</p>
+            <p data-testid="stat-consensus" className="font-heading text-2xl font-bold text-shire">{roundsWithConsensus.length}</p>
             <p className="font-subheading text-xs text-muted-foreground">Consensus</p>
           </div>
           <div className="rounded-lg border border-gold/20 bg-card px-4 py-3 text-center">
-            <p className="font-heading text-2xl font-bold text-destructive">{roundsWithDivergence.length}</p>
+            <p data-testid="stat-divided" className="font-heading text-2xl font-bold text-destructive">{roundsWithDivergence.length}</p>
             <p className="font-subheading text-xs text-muted-foreground">Divided</p>
           </div>
         </div>
       )}
 
       {data.rounds.length === 0 ? (
-        <p className="text-muted-foreground">No rounds played yet.</p>
+        <p data-testid="empty-chronicles" className="text-muted-foreground">No rounds played yet.</p>
       ) : (
         <div className="flex flex-col gap-4">
           {data.rounds.map((round) => {
             const roundSummary = summary?.rounds.find((r) => r.roundId === round.id) ?? null
             return (
-              <div key={round.id} className="lotr-card !p-4">
+              <div key={round.id} data-testid="round-history-item" data-status={round.status} data-topic={round.topic ?? ''} className="lotr-card !p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="font-subheading font-semibold">{round.topic ?? 'Untitled Round'}</h3>
                   <span className={`rounded px-2 py-1 text-xs font-medium ${round.status === 'REVEALED' ? 'bg-shire/10 text-shire' : 'bg-gold/10 text-gold'}`}>
@@ -129,7 +129,7 @@ export default function ResultsPage({ params }: Props) {
         </div>
       )}
 
-      <a href={`/session/${inviteCode}`} className="font-subheading text-sm text-gold underline">
+      <a data-testid="back-to-council" href={`/session/${inviteCode}`} className="font-subheading text-sm text-gold underline">
         Return to the Council
       </a>
     </div>

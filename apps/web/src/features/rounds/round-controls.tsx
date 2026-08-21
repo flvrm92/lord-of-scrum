@@ -63,7 +63,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
   }
 
   return (
-    <div className="rounded-lg border-2 border-gold/20 bg-gradient-to-br from-gold/5 to-transparent p-4">
+    <div data-testid="round-controls" data-round-status={currentRound?.status ?? 'NONE'} className="rounded-lg border-2 border-gold/20 bg-gradient-to-br from-gold/5 to-transparent p-4">
       <h3 className="mb-3 flex items-center gap-2 font-subheading text-xs font-semibold uppercase tracking-widest text-gold">
         <img src="/fellowship-shield.svg" alt="" className="torch-flicker h-4 w-4" />
         Steward&apos;s Commands
@@ -73,6 +73,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
         <div className="flex flex-col gap-2">
           <form onSubmit={handleStartRound} className="flex gap-2">
             <input
+              data-testid="topic-input"
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
@@ -81,6 +82,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
               className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <button
+              data-testid="start-round"
               type="submit"
               disabled={isLoading || !topic.trim()}
               className="rounded-md bg-elvish px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-elvish/90 hover:shadow-[0_0_8px_rgba(74,139,158,0.3)] disabled:opacity-50"
@@ -89,6 +91,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
             </button>
           </form>
           <a
+            data-testid="view-chronicles"
             href={`/session/${inviteCode}/results`}
             className="self-start font-subheading text-xs text-gold/70 underline transition-colors hover:text-gold"
           >
@@ -100,6 +103,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
       {currentRound?.status === 'VOTING' && (
         <div className="flex gap-2">
           <button
+            data-testid="reveal-round"
             onClick={handleReveal}
             disabled={isLoading}
             className="group flex items-center gap-2 rounded-md bg-gold px-4 py-2 font-subheading text-sm font-medium text-white transition-all hover:bg-gold/90 hover:shadow-[0_0_12px_rgba(184,134,11,0.3)] disabled:opacity-50"
@@ -113,6 +117,7 @@ export function RoundControls({ sessionId, participantId, currentRound, inviteCo
             The Eye Reveals All
           </button>
           <button
+            data-testid="reset-round"
             onClick={handleReset}
             disabled={isLoading}
             className="rounded-md border border-border bg-background px-4 py-2 font-subheading text-sm font-medium transition-colors hover:bg-secondary disabled:opacity-50"

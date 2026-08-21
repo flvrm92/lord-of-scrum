@@ -10,7 +10,8 @@
     "test": "turbo test",
     "db:migrate": "turbo db:migrate",
     "db:seed": "turbo db:seed",
-    "db:studio": "turbo db:studio"
+    "db:studio": "turbo db:studio",
+    "test:e2e": "turbo test:e2e"
   },
   "devDependencies": {
     "turbo": "^2"

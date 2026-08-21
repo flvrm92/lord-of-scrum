@@ -98,7 +98,7 @@ export default function SessionPage({ params }: Props) {
 
   if (fetchError) {
     return (
-      <div className="flex flex-col items-center gap-4 py-16">
+      <div data-testid="state-error" className="flex flex-col items-center gap-4 py-16">
         <img src="/tree-of-gondor.svg" alt="" className="h-16 w-16 text-muted-foreground/20" />
         <p className="font-subheading text-destructive">This path leads nowhere... The council has dispersed.</p>
         <a href="/" className="font-subheading text-sm text-gold underline">Return to the Shire</a>
@@ -109,7 +109,7 @@ export default function SessionPage({ params }: Props) {
   // Dismissed state: participant is in the session but marked inactive
   if (sessionData && participant && !participant.isActive) {
     return (
-      <div className="flex flex-col items-center gap-4 py-16 text-center">
+      <div data-testid="state-dismissed" className="flex flex-col items-center gap-4 py-16 text-center">
         <img src="/tree-of-gondor.svg" alt="" className="h-16 w-16 text-muted-foreground/20" />
         <h2 className="font-heading text-2xl text-elvish">You have been dismissed from this council</h2>
         <p className="font-subheading text-muted-foreground italic">The Steward has spoken. Your counsel is no longer required.</p>
@@ -120,7 +120,7 @@ export default function SessionPage({ params }: Props) {
 
   if (!sessionData || !participant) {
     return (
-      <div className="flex flex-col items-center gap-4 py-16">
+      <div data-testid="state-loading" className="flex flex-col items-center gap-4 py-16">
         <img src="/one-ring.svg" alt="" className="h-12 w-12 animate-spin" style={{ animationDuration: '3s' }} />
         <p className="font-subheading text-muted-foreground italic">Consulting the Palantir...</p>
       </div>
@@ -128,17 +128,17 @@ export default function SessionPage({ params }: Props) {
   }
 
   return (
-    <div className="flex animate-fade-in flex-col gap-6">
+    <div data-testid="room-root" className="flex animate-fade-in flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl tracking-wide text-elvish">{sessionData.name}</h1>
+          <h1 data-testid="session-name" className="font-heading text-2xl tracking-wide text-elvish">{sessionData.name}</h1>
           <p className="text-sm text-muted-foreground">
-            Fellowship Seal: <span className="animate-gold-sparkle font-mono font-bold tracking-widest text-gold">{sessionData.inviteCode}</span>
+            Fellowship Seal: <span data-testid="invite-code" className="animate-gold-sparkle font-mono font-bold tracking-widest text-gold">{sessionData.inviteCode}</span>
           </p>
         </div>
         <div className="text-right text-sm text-muted-foreground">
-          <p>Playing as <span className="font-semibold text-foreground">{participant.displayName}</span></p>
-          {participant.isHost && <span className="flex items-center justify-end gap-1 text-xs text-gold"><img src="/fellowship-shield.svg" alt="" className="h-3 w-3" /> Steward</span>}
+          <p>Playing as <span data-testid="current-player" className="font-semibold text-foreground">{participant.displayName}</span></p>
+          {participant.isHost && <span data-testid="host-badge" className="flex items-center justify-end gap-1 text-xs text-gold"><img src="/fellowship-shield.svg" alt="" className="h-3 w-3" /> Steward</span>}
         </div>
       </div>
 
