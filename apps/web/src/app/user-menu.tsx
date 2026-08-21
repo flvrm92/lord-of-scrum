@@ -10,12 +10,15 @@ export function UserMenu() {
   const [isRerolling, setIsRerolling] = useState(false)
 
   if (status === 'loading') {
-    return <div className="h-8 w-8 animate-pulse rounded-full bg-parchment/10" />
+    return <div data-testid="user-menu" data-state="loading" className="h-8 w-8 animate-pulse rounded-full bg-parchment/10" />
   }
 
   if (!session?.user) {
     return (
       <a
+        data-testid="user-menu"
+        data-state="unauthenticated"
+        data-signin-link=""
         href="/auth/signin"
         className="rounded-md px-3 py-1.5 font-subheading text-sm text-parchment/70 transition-colors hover:text-ring"
       >
@@ -48,7 +51,7 @@ export function UserMenu() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div data-testid="user-menu" data-state="authenticated" className="flex items-center gap-2">
       {session.user.image ? (
         <Image
           src={session.user.image}
@@ -64,13 +67,14 @@ export function UserMenu() {
         </span>
       )}
       <div className="hidden flex-col sm:flex">
-        <span className="font-subheading text-sm text-parchment/80">
+        <span data-testid="user-name" className="font-subheading text-sm text-parchment/80">
           {session.user.name ?? 'Traveler'}
         </span>
         {displayTitle && (
           <div className="flex items-center gap-1">
-            <span className="text-[11px] italic text-gold/70">{displayTitle}</span>
+            <span data-testid="user-title" className="text-[11px] italic text-gold/70">{displayTitle}</span>
             <button
+              data-testid="reroll-title"
               onClick={handleReroll}
               disabled={isRerolling}
               title="Reroll title"
@@ -82,6 +86,7 @@ export function UserMenu() {
         )}
       </div>
       <button
+        data-testid="signout-button"
         onClick={() => signOut({ callbackUrl: '/' })}
         className="rounded-md px-2 py-1 font-subheading text-xs text-parchment/50 transition-colors hover:text-ring"
       >

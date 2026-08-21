@@ -54,6 +54,7 @@ out/
 .env
 .env.local
 .env.*.local
+.env.test
 *.local
 
 # ========================================
@@ -63,6 +64,15 @@ out/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# ========================================
+# Playwright / E2E
+# ========================================
+apps/web/playwright-report/
+apps/web/test-results/
+apps/web/blob-report/
+apps/web/e2e/.auth/
+.playwright-cache/
 
 # ========================================
 # Misc

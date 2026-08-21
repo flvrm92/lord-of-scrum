@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  # Blocking gates, per docs/07-cicd.md.
+  verify:
+    name: Lint, typecheck and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+  # Recommended but not blocking, per docs/07-cicd.md. Flip
+  # `continue-on-error` to false once the suite has proven stable.
+  e2e:
+    name: End-to-end
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: lordofscrum_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Write .env.test
+        working-directory: apps/web
+        run: |
+          cat > .env.test <<'ENV'
+          DATABASE_URL="postgresql://postgres:postgres@localhost:5432/lordofscrum_test"
+          DIRECT_URL="postgresql://postgres:postgres@localhost:5432/lordofscrum_test"
+          NEXTAUTH_SECRET="ci-e2e-secret"
+          NEXTAUTH_URL="http://localhost:3000"
+          GITHUB_CLIENT_ID=""
+          GITHUB_CLIENT_SECRET=""
+          GOOGLE_CLIENT_ID=""
+          GOOGLE_CLIENT_SECRET=""
+          ABLY_API_KEY=""
+          CRON_SECRET="ci-cron-secret"
+          ENV
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Playwright browsers
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run E2E suite
+        run: pnpm test:e2e
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7

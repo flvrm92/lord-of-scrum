@@ -36,7 +36,8 @@ A LOTR-themed Scrum Planning Poker tool for agile teams. Create sessions, invite
 │       │   ├── styles/            # Global CSS
 │       │   └── types/             # TypeScript type augmentations
 │       ├── prisma/                # Schema, migrations, seed
-│       ├── tests/                 # Unit + integration tests
+│       ├── tests/                 # Unit tests (Vitest)
+│       ├── e2e/                   # End-to-end tests (Playwright)
 │       └── public/                # Static assets
 ├── packages/
 │   └── config/                    # Shared config (future)
@@ -90,7 +91,7 @@ npx prisma migrate dev --name init
 npx prisma db seed
 ```
 
-This creates all tables and seeds the default estimation scales (Fibonacci, T-Shirt, Powers of 2).
+This creates all tables and seeds the default estimation scales (Fibonacci, T-Shirt, Powers of 2, Sequencial).
 
 ### 4. Run the development server
 
@@ -110,10 +111,49 @@ Open [http://localhost:3000](http://localhost:3000) — you should see the Lord 
 | `pnpm lint` | Run ESLint |
 | `pnpm typecheck` | Run TypeScript type checking |
 | `pnpm test` | Run unit tests (Vitest) |
-| `pnpm test:e2e` | Run end-to-end tests (Playwright) |
+| `pnpm test:e2e` | Run end-to-end tests (Playwright) — see [Testing](#testing) |
 | `pnpm db:migrate` | Run Prisma migrations |
 | `pnpm db:seed` | Seed database with default scales |
 | `pnpm db:studio` | Open Prisma Studio |
+
+## Testing
+
+```bash
+pnpm test        # unit tests (Vitest)
+pnpm lint        # ESLint + tsc --noEmit
+pnpm test:e2e    # end-to-end tests (Playwright)
+```
+
+### End-to-end setup
+
+The E2E suite drives a real browser against a real server and a real database,
+so it needs its own PostgreSQL — **separate from your dev database**. Setup
+refuses to run if `.env.test` is missing or shares a `DATABASE_URL` with
+`.env`, so the tests cannot pollute real data.
+
+```bash
+# 1. A throwaway Postgres (or point at a separate Neon/Supabase branch)
+docker run -d -p 5433:5432 -e POSTGRES_PASSWORD=postgres --name los-test postgres:16
+
+# 2. Configure it
+cp apps/web/.env.test.example apps/web/.env.test   # then set DATABASE_URL
+
+# 3. Install the browser once
+pnpm --filter @lorofscrum/web exec playwright install --with-deps chromium
+
+# 4. Run
+pnpm test:e2e
+```
+
+Migrations and seeding run automatically before the suite. Useful extras:
+
+| Command | Description |
+|---------|-------------|
+| `pnpm --filter @lorofscrum/web test:e2e:ui` | Interactive Playwright UI mode |
+| `pnpm --filter @lorofscrum/web test:e2e:report` | Open the last HTML report |
+| `pnpm --filter @lorofscrum/web exec playwright test --project=realtime` | Ably push tests (needs `ABLY_API_KEY`) |
+
+The core suite is realtime-independent and passes without an Ably key.
 
 ## How It Works
 

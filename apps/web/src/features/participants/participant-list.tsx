@@ -38,7 +38,7 @@ export function ParticipantList({ participants, currentRound, currentParticipant
   }
 
   return (
-    <div className="lotr-card !p-4">
+    <div data-testid="participant-list" className="lotr-card !p-4">
       <h3 className="mb-3 flex items-center gap-2 font-subheading text-xs font-semibold uppercase tracking-widest text-gold">
         <img src="/fellowship-shield.svg" alt="" className="h-4 w-4" />
         The Fellowship ({participants.length})
@@ -53,6 +53,12 @@ export function ParticipantList({ participants, currentRound, currentParticipant
           return (
             <div
               key={p.id}
+              data-testid="participant-row"
+              data-name={p.displayName}
+              data-host={p.isHost}
+              data-voted={hasVoted}
+              data-active={p.isActive}
+              data-me={isMe}
               className={`flex items-center justify-between rounded-md px-3 py-2 transition-all duration-500 ${isMe ? 'bg-elvish/5 ring-1 ring-elvish/20' : 'bg-background'} ${hasVoted ? 'shadow-[0_0_10px_-2px_rgba(184,134,11,0.35)]' : ''}`}
             >
               <div className="flex items-center gap-2">
@@ -79,6 +85,7 @@ export function ParticipantList({ participants, currentRound, currentParticipant
                     // Keyed on the state so React remounts the span and the
                     // entrance animation replays the moment a vote lands
                     key={hasVoted ? 'cast' : 'pondering'}
+                    data-testid="participant-status"
                     className={`scroll-cast-in text-xs ${hasVoted ? 'text-shire font-medium' : 'text-muted-foreground italic'}`}
                   >
                     {hasVoted ? '✓ Scroll cast' : 'Pondering...'}
@@ -86,6 +93,8 @@ export function ParticipantList({ participants, currentRound, currentParticipant
                 )}
                 {(canRemove || canLeave) && (
                   <button
+                    data-testid="participant-action"
+                    data-action={canLeave ? 'leave' : 'dismiss'}
                     onClick={() => handleRemove(p)}
                     disabled={removingId === p.id}
                     title={canLeave ? 'Leave council' : `Dismiss ${p.displayName}`}

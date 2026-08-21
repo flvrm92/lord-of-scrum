@@ -111,12 +111,16 @@ export default function HomePage() {
       <div className="lotr-card-ornate w-full max-w-md">
         <div className="mb-6 flex gap-2">
           <button
+            data-testid="tab-create"
+            data-active={tab === 'create'}
             onClick={() => { setTab('create'); setError('') }}
             className={`flex-1 rounded-md px-4 py-2 font-subheading text-sm font-medium transition-colors ${tab === 'create' ? 'bg-gold text-white' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
           >
             Forge a Council
           </button>
           <button
+            data-testid="tab-join"
+            data-active={tab === 'join'}
             onClick={() => { setTab('join'); setError('') }}
             className={`flex-1 rounded-md px-4 py-2 font-subheading text-sm font-medium transition-colors ${tab === 'join' ? 'bg-gold text-white' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'}`}
           >
@@ -125,11 +129,11 @@ export default function HomePage() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+          <div data-testid="form-error" className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
 
         {tab === 'create' ? (
-          <form onSubmit={handleCreate} className="flex flex-col gap-4">
+          <form data-testid="create-form" onSubmit={handleCreate} className="flex flex-col gap-4">
             <div>
               <label htmlFor="sessionName" className="mb-1 block text-sm font-medium font-subheading">Session Name</label>
               <input
@@ -172,6 +176,7 @@ export default function HomePage() {
               </select>
             </div>
             <button
+              data-testid="submit-create"
               type="submit"
               disabled={createMutation.isPending}
               className="rounded-md bg-gold px-4 py-2.5 font-subheading text-sm font-medium text-white transition-all hover:bg-gold/90 hover:shadow-[0_0_12px_rgba(184,134,11,0.3)] disabled:opacity-50"
@@ -180,7 +185,7 @@ export default function HomePage() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleJoin} className="flex flex-col gap-4">
+          <form data-testid="join-form" onSubmit={handleJoin} className="flex flex-col gap-4">
             <div>
               <label htmlFor="inviteCode" className="mb-1 block text-sm font-medium font-subheading">Fellowship Seal</label>
               <input
@@ -208,6 +213,7 @@ export default function HomePage() {
               />
             </div>
             <button
+              data-testid="submit-join"
               type="submit"
               disabled={joinMutation.isPending}
               className="rounded-md bg-gold px-4 py-2.5 font-subheading text-sm font-medium text-white transition-all hover:bg-gold/90 hover:shadow-[0_0_12px_rgba(184,134,11,0.3)] disabled:opacity-50"

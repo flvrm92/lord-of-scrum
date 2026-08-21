@@ -27,7 +27,7 @@ export function VoteCardFlip({
   className,
 }: Props) {
   return (
-    <div className={`flip-card h-24 ${className ?? ''}`}>
+    <div data-testid="vote-card" data-name={displayName} data-value={value ?? ''} className={`flip-card h-24 ${className ?? ''}`}>
       <div
         className="flip-card-inner"
         data-flipped={flipped}

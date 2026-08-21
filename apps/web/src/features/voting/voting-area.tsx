@@ -79,7 +79,7 @@ export function VotingArea({ session, participantId, onVote }: Props) {
 
   if (!currentRound) {
     return (
-      <div className="lotr-card p-8 text-center">
+      <div data-testid="empty-round" className="lotr-card p-8 text-center">
         <img src="/tree-of-gondor.svg" alt="" className="mx-auto mb-4 h-16 w-16 text-muted-foreground/30" />
         <p className="font-subheading text-lg text-muted-foreground">The council has not yet begun...</p>
         <p className="mt-2 text-sm text-muted-foreground italic">Await the word of the Steward.</p>
@@ -117,14 +117,14 @@ export function VotingArea({ session, participantId, onVote }: Props) {
   if (currentRound.status === 'REVEALED') {
     if (isConsensus && consensus.value) {
       return (
-        <div className="lotr-card-ornate consensus-glow">
-          <h3 className="mb-6 font-subheading text-lg font-semibold text-elvish text-center">{currentRound.topic}</h3>
+        <div data-testid="consensus-card" className="lotr-card-ornate consensus-glow">
+          <h3 data-testid="round-topic" className="mb-6 font-subheading text-lg font-semibold text-elvish text-center">{currentRound.topic}</h3>
 
           <div className="flex flex-col items-center gap-5">
             {/* The One Ring with unanimous value */}
             <div className="consensus-ring">
               <img src="/one-ring.svg" alt="" className="absolute inset-0 h-full w-full animate-ring-glow" />
-              <span className="relative z-10 font-heading text-5xl font-bold text-ring drop-shadow-[0_0_12px_rgba(255,215,0,0.6)]">
+              <span data-testid="consensus-value" className="relative z-10 font-heading text-5xl font-bold text-ring drop-shadow-[0_0_12px_rgba(255,215,0,0.6)]">
                 {consensus.value}
               </span>
             </div>
@@ -135,7 +135,7 @@ export function VotingArea({ session, participantId, onVote }: Props) {
             </div>
 
             {/* Banner message */}
-            <p className="consensus-banner">One number to rule them all</p>
+            <p data-testid="consensus-banner" className="consensus-banner">One number to rule them all</p>
             <p className="consensus-subtitle">The Fellowship speaks with one voice</p>
 
             {/* Voter breakdown — smaller, below the celebration */}
@@ -178,12 +178,12 @@ export function VotingArea({ session, participantId, onVote }: Props) {
       !hasAbstention(currentRound.votes, session.scale.values)
 
     return (
-      <div className={`lotr-card-ornate ${isDiverged ? 'sauron-watch' : ''}`}>
+      <div data-testid="revealed-card" data-diverged={isDiverged} className={`lotr-card-ornate ${isDiverged ? 'sauron-watch' : ''}`}>
         {isDiverged && (
-          <img src="/eye-of-sauron.svg" alt="" aria-hidden="true" className="sauron-eye" />
+          <img data-testid="sauron-eye" src="/eye-of-sauron.svg" alt="" aria-hidden="true" className="sauron-eye" />
         )}
 
-        <h3 className="relative mb-4 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
+        <h3 data-testid="round-topic" className="relative mb-4 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
 
         <div className="relative grid grid-cols-2 gap-3 sm:grid-cols-3">
           {currentRound.votes.map((vote, i) => {
@@ -219,10 +219,10 @@ export function VotingArea({ session, participantId, onVote }: Props) {
   const progressPct = totalCount > 0 ? Math.round((castCount / totalCount) * 100) : 0
 
   return (
-    <div className="lotr-card">
-      <h3 className="mb-2 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
+    <div data-testid="voting-area" data-round-status={currentRound.status} className="lotr-card">
+      <h3 data-testid="round-topic" className="mb-2 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
       <div className="mb-3 flex items-center gap-2">
-        <p className="text-sm text-muted-foreground italic">
+        <p data-testid="vote-status" className="text-sm text-muted-foreground italic">
           {!hasVoted
             ? 'Cast your scroll, fellow member:'
             : justChanged
@@ -230,7 +230,7 @@ export function VotingArea({ session, participantId, onVote }: Props) {
               : 'Scroll cast! Tap another to change your counsel.'}
         </p>
         {hasVoted && activeValue && (
-          <span className="rounded bg-elvish/10 px-1.5 py-0.5 font-subheading text-xs font-semibold text-elvish">
+          <span data-testid="my-vote-chip" className="rounded bg-elvish/10 px-1.5 py-0.5 font-subheading text-xs font-semibold text-elvish">
             {activeValue}
           </span>
         )}
@@ -239,11 +239,11 @@ export function VotingArea({ session, participantId, onVote }: Props) {
       {/* How much of the Fellowship has spoken */}
       <div className="mb-4 flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <span className="font-subheading text-[11px] uppercase tracking-widest text-gold/70">
+          <span data-testid="votes-cast-label" className="font-subheading text-[11px] uppercase tracking-widest text-gold/70">
             {castCount} of {totalCount} scroll{totalCount === 1 ? '' : 's'} cast
           </span>
           {castCount > 0 && castCount === totalCount && (
-            <span className="font-subheading text-[11px] italic text-shire">All have spoken</span>
+            <span data-testid="all-spoken" className="font-subheading text-[11px] italic text-shire">All have spoken</span>
           )}
         </div>
         <div
@@ -281,6 +281,9 @@ export function VotingArea({ session, participantId, onVote }: Props) {
         {session.scale.values.map((sv) => (
           <button
             key={sv.label}
+            data-testid="vote-option"
+            data-value={sv.label}
+            data-selected={activeValue === sv.label}
             onClick={() => handleVote(sv.label)}
             disabled={isSubmitting}
             className={`vote-card shimmer-hover relative ${
