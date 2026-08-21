@@ -48,14 +48,14 @@ export function AmbientAtmosphere() {
           <div className="mordor-horizon" />
           <div className="mordor-ash" />
           <div className="ambient-breath" />
-          <ParticleCanvas variant="ember" density={2.2} intensity={0.65} />
+          {/* <ParticleCanvas variant="ember" density={2.2} intensity={0.65} /> */}
         </>
       ) : (
         <>
           <div className="rivendell-canopy" />
           <div className="rivendell-mist" />
           <div className="ambient-vignette" />
-          <ParticleCanvas variant="leaf" density={2} intensity={0.9} />
+          {/* <ParticleCanvas variant="leaf" density={2} intensity={0.9} /> */}
         </>
       )}
     </div>

@@ -179,10 +179,6 @@ export function VotingArea({ session, participantId, onVote }: Props) {
 
     return (
       <div data-testid="revealed-card" data-diverged={isDiverged} className={`lotr-card-ornate ${isDiverged ? 'sauron-watch' : ''}`}>
-        {isDiverged && (
-          <img data-testid="sauron-eye" src="/eye-of-sauron.svg" alt="" aria-hidden="true" className="sauron-eye" />
-        )}
-
         <h3 data-testid="round-topic" className="relative mb-4 font-subheading text-lg font-semibold text-elvish">{currentRound.topic}</h3>
 
         <div className="relative grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -286,11 +282,10 @@ export function VotingArea({ session, participantId, onVote }: Props) {
             data-selected={activeValue === sv.label}
             onClick={() => handleVote(sv.label)}
             disabled={isSubmitting}
-            className={`vote-card shimmer-hover relative ${
-              activeValue === sv.label
+            className={`vote-card shimmer-hover relative ${activeValue === sv.label
                 ? 'vote-card-selected'
                 : 'border-border text-foreground hover:border-elvish'
-            } ${pressedValue === sv.label ? 'wax-seal' : ''} disabled:opacity-50`}
+              } ${pressedValue === sv.label ? 'wax-seal' : ''} disabled:opacity-50`}
           >
             {sv.label}
           </button>
