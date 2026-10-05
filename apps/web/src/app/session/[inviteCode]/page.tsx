@@ -1,8 +1,12 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { getAblyClient } from '@/lib/ably-client'
 import type { SessionDto, ParticipantDto } from '@/application/dtos'
+import { readIdentity } from '@/lib/participant-identity'
+import { resolveSessionEntry, type NotFoundReason, type SessionFetch } from '@/lib/session-entry'
+import { buildJoinIntentUrl } from '@/lib/join-intent'
 import { VotingArea } from '@/features/voting/voting-area'
 import { ParticipantList } from '@/features/participants/participant-list'
 import { RoundControls } from '@/features/rounds/round-controls'
@@ -11,72 +15,91 @@ interface Props {
   params: { inviteCode: string }
 }
 
+async function fetchByInvite(inviteCode: string, participantId?: string): Promise<SessionFetch> {
+  try {
+    const query = participantId ? `?participantId=${encodeURIComponent(participantId)}` : ''
+    const res = await fetch(`/api/sessions/by-invite/${encodeURIComponent(inviteCode)}${query}`)
+    if (res.status === 404) return { ok: false, reason: 'missing' }
+    if (!res.ok) return { ok: false, reason: 'unreachable' }
+    return { ok: true, session: (await res.json()) as SessionDto }
+  } catch {
+    return { ok: false, reason: 'unreachable' }
+  }
+}
+
 export default function SessionPage({ params }: Props) {
   const { inviteCode } = params
+  const router = useRouter()
   const [participant, setParticipant] = useState<ParticipantDto | null>(null)
   const [sessionData, setSessionData] = useState<SessionDto | null>(null)
-  const [fetchError, setFetchError] = useState('')
+  const [notFound, setNotFound] = useState<NotFoundReason | null>(null)
 
-  // Fetch session by invite code, then match participant from localStorage
+  // Fetch, resolve, act. Nothing here decides anything: `resolveSessionEntry`
+  // owns the decision, so all four outcomes are tested without a browser.
   useEffect(() => {
     let cancelled = false
 
     async function init() {
-      try {
-        // Pass stored participantId (if any) so the server reveals our own vote during VOTING
-        // We don't know the sessionId yet — fetch without participantId first, then re-fetch with it
-        const res = await fetch(`/api/sessions/by-invite/${encodeURIComponent(inviteCode)}`)
-        if (!res.ok) throw new Error('Session not found')
-        const data: SessionDto = await res.json()
-        if (cancelled) return
+      const fetched = await fetchByInvite(inviteCode)
+      if (cancelled) return
 
-        // Find stored participant for this specific session
-        const stored = localStorage.getItem(`participant:${data.id}`)
-        if (stored) {
-          const p = JSON.parse(stored) as ParticipantDto
-          const current = data.participants.find((pp) => pp.id === p.id)
-          if (current) {
-            setParticipant(current)
-            // Re-fetch with participantId so own vote is visible
-            const res2 = await fetch(`/api/sessions/by-invite/${encodeURIComponent(inviteCode)}?participantId=${encodeURIComponent(p.id)}`)
-            if (!res2.ok || cancelled) { setSessionData(data); return }
-            const data2: SessionDto = await res2.json()
-            if (!cancelled) setSessionData(data2)
-            return
-          }
-        }
-        setSessionData(data)
-        setFetchError('You have not joined this council.')
-      } catch (err: unknown) {
-        if (!cancelled) {
-          setFetchError(err instanceof Error ? err.message : 'Failed to load session')
+      const session = fetched.ok ? fetched.session : null
+      const entry = resolveSessionEntry(fetched, session ? readIdentity(session.id) : null)
+
+      switch (entry.kind) {
+        case 'not-found':
+          setNotFound(entry.reason)
+          return
+
+        case 'join-required':
+          // `replace`, not `push`: Back then returns to whatever preceded the
+          // link rather than re-entering the redirect. The loading state stays
+          // on screen until the navigation lands.
+          router.replace(buildJoinIntentUrl(inviteCode))
+          return
+
+        case 'dismissed':
+          // Rendering is driven by `participant.isActive`, so this needs no flag
+          // of its own — and a dismissal arriving mid-session over Ably reaches
+          // the same screen through the refresh path.
+          setParticipant(entry.participant)
+          setSessionData(session)
+          return
+
+        case 'enter': {
+          setParticipant(entry.participant)
+          // Re-fetch with our own participantId so our vote is visible during VOTING.
+          const withOwnVote = await fetchByInvite(inviteCode, entry.participant.id)
+          if (cancelled) return
+          setSessionData(withOwnVote.ok ? withOwnVote.session : session)
+          return
         }
       }
     }
 
     init()
     return () => { cancelled = true }
-  }, [inviteCode])
+  }, [inviteCode, router])
 
+  // The refresh path deliberately does not re-resolve. `session:archived` is a
+  // published Ably event, and running the resolver here would bounce seated
+  // players out of a council archived under them while they were working.
   const fetchSession = useCallback(async (sessionId: string) => {
+    const stored = readIdentity(sessionId)
     try {
-      const storedP = localStorage.getItem(`participant:${sessionId}`)
-      const pid = storedP ? (JSON.parse(storedP) as ParticipantDto).id : null
-      const url = pid
-        ? `/api/sessions/${encodeURIComponent(sessionId)}?participantId=${encodeURIComponent(pid)}`
+      const url = stored
+        ? `/api/sessions/${encodeURIComponent(sessionId)}?participantId=${encodeURIComponent(stored.id)}`
         : `/api/sessions/${encodeURIComponent(sessionId)}`
       const res = await fetch(url)
       if (!res.ok) throw new Error('Session not found')
-      const data = await res.json()
+      const data: SessionDto = await res.json()
       setSessionData(data)
-      // Update participant from session data
-      if (storedP) {
-        const p = JSON.parse(storedP)
-        const current = data.participants.find((pp: ParticipantDto) => pp.id === p.id)
+      if (stored) {
+        const current = data.participants.find((pp) => pp.id === stored.id)
         if (current) setParticipant(current)
       }
-    } catch (err: unknown) {
-      setFetchError(err instanceof Error ? err.message : 'Failed to load session')
+    } catch {
+      setNotFound('unreachable')
     }
   }, [])
 
@@ -96,11 +119,18 @@ export default function SessionPage({ params }: Props) {
     return () => { channel.unsubscribe(onMessage) }
   }, [sessionData?.id, fetchSession])
 
-  if (fetchError) {
+  if (notFound) {
+    // An archived council is closed, not gone. The original copy told travellers
+    // the session had dispersed even when it was alive and the link was correct;
+    // it is now reserved for the cases where something really is missing.
+    const message = notFound === 'inactive'
+      ? 'This council has adjourned. Its chronicles are sealed.'
+      : 'This path leads nowhere... The council has dispersed.'
+
     return (
-      <div data-testid="state-error" className="flex flex-col items-center gap-4 py-16">
+      <div data-testid="state-error" data-reason={notFound} className="flex flex-col items-center gap-4 py-16">
         <img src="/tree-of-gondor.svg" alt="" className="h-16 w-16 text-muted-foreground/20" />
-        <p className="font-subheading text-destructive">This path leads nowhere... The council has dispersed.</p>
+        <p className="font-subheading text-destructive">{message}</p>
         <a href="/" className="font-subheading text-sm text-gold underline">Return to the Shire</a>
       </div>
     )
@@ -118,6 +148,8 @@ export default function SessionPage({ params }: Props) {
     )
   }
 
+  // Also covers the gap between a `join-required` decision and the redirect
+  // landing, so the error state never flashes on a valid link.
   if (!sessionData || !participant) {
     return (
       <div data-testid="state-loading" className="flex flex-col items-center gap-4 py-16">

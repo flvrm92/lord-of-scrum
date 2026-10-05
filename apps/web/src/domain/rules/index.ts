@@ -2,8 +2,10 @@ import { type RoundStatus, type ScaleValue } from '@/domain/entities'
 export { getRandomLotrTitle, LOTR_TITLES } from './lotr-titles'
 import { InvalidDisplayNameError, InvalidVoteValueError, RoundNotVotingError } from '@/domain/errors'
 
-const INVITE_CODE_LENGTH = 8
-const INVITE_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no 0,O,1,I
+// Exported so the client-side invite-code module checks well-formedness against
+// the very charset and length the generator uses, instead of restating them.
+export const INVITE_CODE_LENGTH = 8
+export const INVITE_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no 0,O,1,I
 
 export function generateInviteCode(): string {
   const chars: string[] = []

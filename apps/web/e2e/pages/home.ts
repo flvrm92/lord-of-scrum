@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { buildJoinIntentUrl } from '@/lib/join-intent'
 
 /** The landing page at `/` — the create / join tabbed card. */
 export class HomePage {
@@ -33,6 +34,22 @@ export class HomePage {
   async goto(): Promise<void> {
     await this.page.goto('/')
     await expect(this.tabCreate).toBeVisible()
+  }
+
+  /**
+   * The main page as a council link leaves it: the join tab already open with
+   * the seal filled. Built through the app's own URL contract rather than a
+   * hand-written query string, so a rename of the parameter cannot leave this
+   * test asserting the old one.
+   */
+  async gotoWithJoinIntent(inviteCode: string): Promise<void> {
+    await this.page.goto(buildJoinIntentUrl(inviteCode))
+    await expect(this.joinForm).toBeVisible()
+  }
+
+  /** The tab the card is currently showing. */
+  async activeTab(): Promise<'create' | 'join'> {
+    return (await this.tabJoin.getAttribute('data-active')) === 'true' ? 'join' : 'create'
   }
 
   /** Waits for the scales query to resolve before the select is usable. */
