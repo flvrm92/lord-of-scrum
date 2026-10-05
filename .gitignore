@@ -86,8 +86,11 @@ worktrees/
 
 .claude/
 
-docs/
-specs/
+# Anchored to the repo root on purpose. Unanchored, `specs/` also matched
+# apps/web/e2e/specs/, which kept the whole Playwright suite out of the repo
+# and left CI's e2e job failing with "No tests found".
+/docs/
+/specs/
 
 .codex/
 CLAUDE.md
