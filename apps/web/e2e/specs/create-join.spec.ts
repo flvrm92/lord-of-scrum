@@ -143,6 +143,21 @@ test.describe('Create and join a council', () => {
     await expect(council.host.room.participantList).toContainText('The Fellowship (2)')
   })
 
+  test('a lower-cased council link still resolves', async ({ page, makeCouncil }) => {
+    const council = await makeCouncil({ hostName: 'Gandalf' })
+
+    // Chat clients and mail readers lower-case URLs. The seal lookup is an
+    // exact match on upper-case codes, so the room page has to normalise or a
+    // mangled link dead-ends on a council that is alive.
+    const room = new SessionRoom(page, council.session.inviteCode.toLowerCase())
+    await room.goto()
+
+    const home = new HomePage(page)
+    await expect(home.joinForm).toBeVisible()
+    await expect(home.inviteCode).toHaveValue(council.session.inviteCode)
+    await expect(room.errorState).toBeHidden()
+  })
+
   test('pressing Back after the redirect does not re-enter it', async ({ page, makeCouncil }) => {
     const council = await makeCouncil()
 
