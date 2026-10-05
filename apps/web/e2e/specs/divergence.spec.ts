@@ -6,7 +6,7 @@ import { test, expect } from '../fixtures/test'
  * 3 and 5 sit one apart.
  */
 test.describe('Divergence', () => {
-  test('a wide spread summons the Eye', async ({ makeCouncil }) => {
+  test('a wide spread marks the round as divided', async ({ makeCouncil }) => {
     const council = await makeCouncil({ hostName: 'Gandalf' })
     const legolas = await council.invite('Legolas')
 
@@ -23,15 +23,15 @@ test.describe('Divergence', () => {
     await council.host.room.reveal()
 
     await expect(council.host.room.revealedCard).toHaveAttribute('data-diverged', 'true')
-    await expect(council.host.room.sauronEye).toBeVisible()
+    await expect(council.host.room.revealedCard).toHaveClass(/sauron-watch/)
     // The stats banner names the two extremes.
     await expect(council.host.room.revealedCard).toContainText('1 – 13')
 
     await legolas.room.sync()
-    await expect(legolas.room.sauronEye).toBeVisible()
+    await expect(legolas.room.revealedCard).toHaveClass(/sauron-watch/)
   })
 
-  test('neighbouring estimates keep the Eye closed', async ({ makeCouncil }) => {
+  test('neighbouring estimates leave the round undivided', async ({ makeCouncil }) => {
     const council = await makeCouncil({ hostName: 'Gandalf' })
     const legolas = await council.invite('Legolas')
 
@@ -48,10 +48,10 @@ test.describe('Divergence', () => {
     await council.host.room.reveal()
 
     await expect(council.host.room.revealedCard).toHaveAttribute('data-diverged', 'false')
-    await expect(council.host.room.sauronEye).toBeHidden()
+    await expect(council.host.room.revealedCard).not.toHaveClass(/sauron-watch/)
   })
 
-  test('an abstention withholds the Eye even when the numbers diverge', async ({ makeCouncil }) => {
+  test('an abstention leaves the round undivided even when the numbers diverge', async ({ makeCouncil }) => {
     // The spread only describes the members who committed to a number, so a
     // round containing '?' is incomplete rather than divided.
     const council = await makeCouncil({ hostName: 'Gandalf' })
@@ -77,7 +77,7 @@ test.describe('Divergence', () => {
     await expect(council.host.room.revealedCard).toContainText('1 – 13')
     // ...but the theatrics are withheld.
     await expect(council.host.room.revealedCard).toHaveAttribute('data-diverged', 'false')
-    await expect(council.host.room.sauronEye).toBeHidden()
+    await expect(council.host.room.revealedCard).not.toHaveClass(/sauron-watch/)
   })
 
   test('a single numeric vote cannot diverge', async ({ makeCouncil }) => {
@@ -97,6 +97,6 @@ test.describe('Divergence', () => {
     await council.host.room.reveal()
 
     await expect(council.host.room.revealedCard).toHaveAttribute('data-diverged', 'false')
-    await expect(council.host.room.sauronEye).toBeHidden()
+    await expect(council.host.room.revealedCard).not.toHaveClass(/sauron-watch/)
   })
 })

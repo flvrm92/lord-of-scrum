@@ -17,7 +17,7 @@ test.describe('Re-vote flow', () => {
 
     await council.host.room.sync()
     await council.host.room.reveal()
-    await expect(council.host.room.sauronEye).toBeVisible()
+    await expect(council.host.room.revealedCard).toHaveClass(/sauron-watch/)
 
     // Revealing does not close the round — the Steward can send it back.
     await expect(council.host.room.resetButton).toBeHidden()
@@ -69,7 +69,7 @@ test.describe('Re-vote flow', () => {
 
     await expect(council.host.room.consensusCard).toBeVisible()
     await expect(council.host.room.consensusValue).toHaveText('8')
-    await expect(council.host.room.sauronEye).toBeHidden()
+    await expect(council.host.room.revealedCard).toBeHidden()
   })
 
   test('a revealed round is followed by a fresh one, not a reset', async ({ makeCouncil }) => {
