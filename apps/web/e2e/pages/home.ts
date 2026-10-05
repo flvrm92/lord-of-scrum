@@ -35,6 +35,11 @@ export class HomePage {
     await expect(this.tabCreate).toBeVisible()
   }
 
+  /** The tab the card is currently showing. */
+  async activeTab(): Promise<'create' | 'join'> {
+    return (await this.tabJoin.getAttribute('data-active')) === 'true' ? 'join' : 'create'
+  }
+
   /** Waits for the scales query to resolve before the select is usable. */
   async waitForScales(): Promise<void> {
     await expect(this.scale.locator('option')).not.toHaveCount(1)

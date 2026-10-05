@@ -130,12 +130,6 @@
   100% { transform: translateX(6%) translateY(-3%); opacity: 0.18; }
 }
 
-@keyframes eye-awaken {
-  0% { transform: scaleY(0.05); opacity: 0; }
-  40% { transform: scaleY(1.06); opacity: 1; }
-  100% { transform: scaleY(1); opacity: 1; }
-}
-
 @keyframes eye-blink {
   0%, 92%, 100% { transform: scaleY(1); }
   96% { transform: scaleY(0.08); }
@@ -387,18 +381,10 @@
       sauron-pulse 3.2s ease-in-out 0.45s infinite;
   }
 
-  .sauron-eye {
-    @apply pointer-events-none absolute left-1/2 top-6 w-[70%] max-w-[22rem] -translate-x-1/2 select-none;
-    opacity: 0.14;
-    filter: drop-shadow(0 0 18px rgba(255, 69, 0, 0.5));
-    animation:
-      eye-awaken 0.8s cubic-bezier(0.34, 1.4, 0.64, 1) both,
-      eye-blink 6s ease-in-out 0.8s infinite;
-  }
-
-  .dark .sauron-eye {
-    opacity: 0.22;
-  }
+  /* `.sauron-eye` lived here until cc84320 removed the overlay image from the
+     revealed card. `.sauron-watch` above is now the whole of the divergence
+     treatment; the Eye survives only on the reveal button, which uses
+     `.eye-awaken-idle` below. */
 
   .eye-awaken-idle {
     animation: eye-blink 6s ease-in-out infinite;

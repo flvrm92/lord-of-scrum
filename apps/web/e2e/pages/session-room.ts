@@ -31,7 +31,6 @@ export class SessionRoom {
   readonly consensusCard: Locator
   readonly consensusValue: Locator
   readonly revealedCard: Locator
-  readonly sauronEye: Locator
   readonly participantList: Locator
   readonly errorState: Locator
   readonly dismissedState: Locator
@@ -62,7 +61,6 @@ export class SessionRoom {
     this.consensusCard = page.getByTestId('consensus-card')
     this.consensusValue = page.getByTestId('consensus-value')
     this.revealedCard = page.getByTestId('revealed-card')
-    this.sauronEye = page.getByTestId('sauron-eye')
     this.participantList = page.getByTestId('participant-list')
     this.errorState = page.getByTestId('state-error')
     this.dismissedState = page.getByTestId('state-dismissed')

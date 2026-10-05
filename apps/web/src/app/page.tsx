@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-keys'
+import { writeIdentity } from '@/lib/participant-identity'
+import { readJoinIntent } from '@/lib/join-intent'
+import { normalise } from '@/lib/invite-code'
 import type { ScaleDto } from '@/application/dtos'
 
 export default function HomePage() {
@@ -22,6 +25,30 @@ export default function HomePage() {
   const [joinName, setJoinName] = useState('')
 
   const [error, setError] = useState('')
+
+  const joinNameRef = useRef<HTMLInputElement>(null)
+  const [pendingFocus, setPendingFocus] = useState(false)
+
+  // A council link for a session we have no identity in lands here, carrying its
+  // seal. Read from `window.location` rather than `useSearchParams`, which would
+  // need a Suspense boundary to avoid Next's prerender bailout.
+  useEffect(() => {
+    const seal = readJoinIntent(window.location.search)
+    if (!seal) return
+    setTab('join')
+    setInviteCode(seal)
+    setPendingFocus(true)
+  }, [])
+
+  // Focus lands in a second effect on purpose. The join form is not in the DOM
+  // until the join tab renders, so focusing in the effect above would run before
+  // that commit and silently no-op. `autoFocus` would be wrong too — it would
+  // also fire when someone clicks the join tab by hand.
+  useEffect(() => {
+    if (!pendingFocus || tab !== 'join') return
+    joinNameRef.current?.focus()
+    setPendingFocus(false)
+  }, [pendingFocus, tab])
 
   // Auto-fill display name from auth profile
   useEffect(() => {
@@ -55,7 +82,7 @@ export default function HomePage() {
       return res.json()
     },
     onSuccess: (data) => {
-      localStorage.setItem(`participant:${data.id}`, JSON.stringify(data.participants[0]))
+      writeIdentity(data.id, data.participants[0])
       router.push(`/session/${data.inviteCode}`)
     },
     onError: (err: Error) => setError(err.message),
@@ -63,7 +90,7 @@ export default function HomePage() {
 
   const joinMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/sessions/join/${encodeURIComponent(inviteCode.toUpperCase().trim())}`, {
+      const res = await fetch(`/api/sessions/join/${encodeURIComponent(normalise(inviteCode))}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ displayName: joinName }),
@@ -75,7 +102,7 @@ export default function HomePage() {
       return res.json()
     },
     onSuccess: (data) => {
-      localStorage.setItem(`participant:${data.session.id}`, JSON.stringify(data.participant))
+      writeIdentity(data.session.id, data.participant)
       router.push(`/session/${data.session.inviteCode}`)
     },
     onError: (err: Error) => setError(err.message),
@@ -194,7 +221,7 @@ export default function HomePage() {
                 required
                 maxLength={8}
                 value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                onChange={(e) => setInviteCode(normalise(e.target.value))}
                 placeholder="ABCD1234"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono tracking-widest ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
@@ -203,6 +230,7 @@ export default function HomePage() {
               <label htmlFor="joinName" className="mb-1 block text-sm font-medium font-subheading">Your Display Name</label>
               <input
                 id="joinName"
+                ref={joinNameRef}
                 type="text"
                 required
                 maxLength={30}
