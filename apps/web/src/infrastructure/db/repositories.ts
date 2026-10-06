@@ -121,6 +121,10 @@ export const voteRepository: VoteRepository = {
   async deleteByRoundId(roundId) {
     await prisma.vote.deleteMany({ where: { roundId } })
   },
+
+  async deleteByParticipant(participantId, roundIds) {
+    await prisma.vote.deleteMany({ where: { participantId, roundId: { in: roundIds } } })
+  },
 }
 
 export const scaleRepository: ScaleRepository = {

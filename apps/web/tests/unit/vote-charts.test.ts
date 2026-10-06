@@ -142,6 +142,7 @@ function makeDeps(overrides: Partial<UseCaseDeps> = {}): UseCaseDeps {
       findByRoundId: vi.fn().mockResolvedValue(roundVotes),
       upsert: vi.fn(),
       deleteByRoundId: vi.fn(),
+      deleteByParticipant: vi.fn(),
     },
     scaleRepo: { findAll: vi.fn() },
     eventPublisher: {

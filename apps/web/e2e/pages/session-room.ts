@@ -142,13 +142,13 @@ export class SessionRoom {
    * Dismiss a participant. The list uses a native `confirm()`, which blocks the
    * page until handled, so the dialog handler must be attached before clicking.
    *
-   * Removal is a soft delete (`isActive = false`), so the row stays in the list
-   * and flips its active dot rather than disappearing.
+   * A dismissed member leaves the council: their row goes from the list rather
+   * than staying on as a greyed-out entry.
    */
   async removeParticipant(displayName: string): Promise<void> {
     this.page.once('dialog', (dialog) => dialog.accept())
     await this.participantRow(displayName).getByTestId('participant-action').click()
-    await expect(this.participantRow(displayName)).toHaveAttribute('data-active', 'false')
+    await expect(this.participantRow(displayName)).toHaveCount(0)
   }
 
   async leave(): Promise<void> {

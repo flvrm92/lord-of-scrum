@@ -56,11 +56,22 @@ export default function SessionPage({ params }: Props) {
     let cancelled = false
 
     async function init() {
-      const fetched = await fetchByInvite(inviteCode)
+      // Two lookups, deliberately. Identity is stored under the session id,
+      // which only the first, anonymous lookup can tell us; the second asks
+      // again *as ourselves*. That second pass is what makes our own vote
+      // visible during VOTING, and — since a dismissed member is no longer in
+      // the council the session reports to everyone else — it is also the only
+      // way the resolver can see our own dismissal rather than treat us as a
+      // stranger and send us to the join form.
+      const anonymous = await fetchByInvite(inviteCode)
       if (cancelled) return
 
+      const stored = anonymous.ok ? readIdentity(anonymous.session.id) : null
+      const fetched = stored ? await fetchByInvite(inviteCode, stored.id) : anonymous
+      if (cancelled) return
+
+      const entry = resolveSessionEntry(fetched, stored)
       const session = fetched.ok ? fetched.session : null
-      const entry = resolveSessionEntry(fetched, session ? readIdentity(session.id) : null)
 
       switch (entry.kind) {
         case 'not-found':
@@ -75,21 +86,14 @@ export default function SessionPage({ params }: Props) {
           return
 
         case 'dismissed':
-          // Rendering is driven by `participant.isActive`, so this needs no flag
-          // of its own — and a dismissal arriving mid-session over Ably reaches
-          // the same screen through the refresh path.
+        case 'enter':
+          // Both land on the same two setters: rendering is driven by
+          // `participant.isActive`, so dismissal needs no flag of its own —
+          // and a dismissal arriving mid-session over Ably reaches the same
+          // screen through the refresh path.
           setParticipant(entry.participant)
           setSessionData(session)
           return
-
-        case 'enter': {
-          setParticipant(entry.participant)
-          // Re-fetch with our own participantId so our vote is visible during VOTING.
-          const withOwnVote = await fetchByInvite(inviteCode, entry.participant.id)
-          if (cancelled) return
-          setSessionData(withOwnVote.ok ? withOwnVote.session : session)
-          return
-        }
       }
     }
 

@@ -41,6 +41,7 @@ export interface VoteRepository {
   findByRoundId(roundId: string): Promise<Vote[]>
   upsert(data: { roundId: string; participantId: string; value: string }): Promise<Vote>
   deleteByRoundId(roundId: string): Promise<void>
+  deleteByParticipant(participantId: string, roundIds: string[]): Promise<void>
 }
 
 export interface ScaleRepository {
