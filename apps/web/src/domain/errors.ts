@@ -73,3 +73,9 @@ export class NotParticipantError extends DomainError {
     super('Requester is not a participant in this session', 'NOT_PARTICIPANT')
   }
 }
+
+export class ParticipantRemovedError extends DomainError {
+  constructor() {
+    super('Participant has been removed from this session', 'PARTICIPANT_REMOVED')
+  }
+}

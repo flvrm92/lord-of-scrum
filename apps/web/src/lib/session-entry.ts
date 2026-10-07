@@ -47,8 +47,10 @@ export function resolveSessionEntry(fetched: SessionFetch, stored: StoredIdentit
         : { kind: 'dismissed', participant: current }
     }
     // A stored id that is absent from the participant list is a stale or
-    // foreign identity, not an error: dismissal is a soft deactivate, so a
-    // dismissed participant is still in the list with `isActive: false`.
+    // foreign identity, not an error. It is never a dismissal: a dismissed
+    // member is gone from the council everyone else sees, but the session
+    // fetched *as that member* still carries their own `isActive: false`
+    // record — which is why the room asks for the session by participant id.
   }
 
   if (session.status !== 'ACTIVE') return { kind: 'not-found', reason: 'inactive' }

@@ -33,6 +33,7 @@ import {
   RoundNotFoundError,
   CannotRemoveSelfAsHostError,
   NotParticipantError,
+  ParticipantRemovedError,
 } from '@/domain/errors'
 
 // ---------- Dependencies Container ----------
@@ -64,6 +65,16 @@ function toSessionDto(
   currentParticipantId?: string | null,
 ): SessionDto {
   if (!session) throw new SessionNotFoundError()
+
+  // A dismissed member is out of the council, not merely greyed out in it: they
+  // leave the Fellowship for everyone else, and stop counting towards it.
+  //
+  // The one exception is the viewer's own record, which is kept even when
+  // inactive — `resolveSessionEntry` reads it to tell a dismissed member they
+  // were dismissed, and without it the room would bounce them into the join
+  // form as if they had never been here.
+  const seated = participants.filter((p) => p.isActive || p.id === currentParticipantId)
+
   return {
     id: session.id,
     name: session.name,
@@ -76,10 +87,12 @@ function toSessionDto(
         .sort((a, b) => a.sortOrder - b.sortOrder)
         .map((v) => ({ label: v.label, numericValue: v.numericValue, sortOrder: v.sortOrder })),
     },
-    participants: participants.map((p, i) => ({
+    participants: seated.map((p) => ({
       id: p.id,
       displayName: p.displayName,
-      isHost: i === 0, // first participant is the host
+      // Resolved against the full list, not this one's index: who the host is
+      // is a fact about the council, not about who happens to be visible.
+      isHost: isHost(p.id, participants),
       isActive: p.isActive,
       lotrTitle: p.lotrTitle,
     })),
@@ -231,6 +244,10 @@ export async function submitVote(deps: UseCaseDeps, input: SubmitVoteInput): Pro
 
   const participant = await deps.participantRepo.findById(input.participantId)
   if (!participant) throw new ParticipantNotFoundError()
+  // A dismissed member can still have the room open in a tab. Without this
+  // guard their next click would put them back into the round the Steward just
+  // removed them from.
+  if (!participant.isActive) throw new ParticipantRemovedError()
 
   const session = await deps.sessionRepo.findById(round.sessionId)
   if (!session) throw new SessionNotFoundError()
@@ -395,6 +412,17 @@ export async function removeParticipant(deps: UseCaseDeps, input: RemoveParticip
 
   // Non-host can only remove themselves (leave)
   if (!requesterIsHost && !isSelfRemoval) throw new NotHostError()
+
+  // Deactivating alone would leave the member inside the round they were
+  // removed from: the vote still counts towards "scrolls cast", still flips a
+  // card on reveal, and still feeds the divergence and the statistics. Rounds
+  // already revealed are the record of what was voted at the time, so those
+  // votes stay — only rounds still open are cleared.
+  const rounds = await deps.roundRepo.findBySessionId(input.sessionId)
+  const openRoundIds = rounds.filter((r) => r.status === 'VOTING').map((r) => r.id)
+  if (openRoundIds.length > 0) {
+    await deps.voteRepo.deleteByParticipant(input.participantId, openRoundIds)
+  }
 
   await deps.participantRepo.updateActive(input.participantId, false)
   await deps.eventPublisher.participantLeft(input.sessionId, input.participantId)
